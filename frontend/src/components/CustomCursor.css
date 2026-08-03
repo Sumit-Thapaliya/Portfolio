@@ -1,0 +1,41 @@
+.cursor__dot,
+.cursor__ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 300;
+  border-radius: 50%;
+}
+
+.cursor__dot {
+  width: 7px;
+  height: 7px;
+  background: var(--sb-teal);
+  transition: width 0.35s var(--sb-ease-smooth), height 0.35s var(--sb-ease-smooth), opacity 0.35s var(--sb-ease-smooth);
+}
+
+.cursor__dot--active {
+  opacity: 0;
+}
+
+.cursor__ring {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(52, 228, 192, 0.5);
+  transition: width 0.4s var(--sb-ease-smooth), height 0.4s var(--sb-ease-smooth), border-color 0.4s var(--sb-ease-smooth), background 0.4s var(--sb-ease-smooth);
+}
+
+.cursor__ring--active {
+  width: 56px;
+  height: 56px;
+  background: rgba(52, 228, 192, 0.08);
+  border-color: var(--sb-amber);
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor__dot,
+  .cursor__ring {
+    display: none;
+  }
+}

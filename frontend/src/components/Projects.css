@@ -1,0 +1,26 @@
+.projects {
+  position: relative;
+  z-index: 1;
+  padding: var(--sb-section-pad) 0;
+  border-top: 1px solid var(--sb-border);
+}
+
+.projects__heading {
+  margin-top: 18px;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 600;
+}
+
+.projects__note {
+  margin-top: 12px;
+  color: var(--sb-text-muted);
+  font-size: 15px;
+  max-width: 480px;
+}
+
+.projects__grid {
+  margin-top: 46px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 26px;
+}

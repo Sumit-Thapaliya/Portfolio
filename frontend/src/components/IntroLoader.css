@@ -1,0 +1,66 @@
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.intro__panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: #0a0e14;
+}
+
+.intro__panel--top {
+  top: 0;
+  height: 50vh;
+}
+
+.intro__panel--bottom {
+  bottom: 0;
+  height: 50vh;
+}
+
+.intro__terminal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--sb-font-mono);
+  font-size: clamp(13px, 1.6vw, 16px);
+  color: var(--sb-teal);
+  min-width: 280px;
+  z-index: 5;
+}
+
+.intro__line {
+  margin: 0 0 6px;
+  opacity: 0;
+  animation: intro-line-in 0.3s ease forwards;
+}
+
+@keyframes intro-line-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.intro__cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background: var(--sb-teal);
+  animation: intro-blink 0.9s steps(1) infinite;
+}
+
+@keyframes intro-blink {
+  50% {
+    opacity: 0;
+  }
+}
