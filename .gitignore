@@ -1,0 +1,29 @@
+
+**/node_modules/
+
+# Ignore backend environment file
+backend/.env
+
+
+# Logs
+*.log
+
+# OS files
+
+
+# Build folders
+dist/
+build/
+
+# Vite cache
+.vite/
+
+# Coverage
+coverage/
+
+# Prisma generated database (if applicable)
+database/
+
+# Python cache (if your ML project exists)
+__pycache__/
+*.py[cod]
