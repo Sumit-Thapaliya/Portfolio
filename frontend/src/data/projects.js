@@ -1,50 +1,77 @@
-// Dummy/placeholder data — swap in your real project details, links, and images.
 const projects = [
   {
-    id: 'medbridge',
-    title: 'MedBridge',
+    id: "medbridge",
+    title: "MedBridge",
     description:
-      'A full-stack healthcare medicine exchange platform for hospitals and clinics — covering inventory management, stock exchange requests, expiry tracking, and AI-powered demand forecasting.',
-    tech: ['React', 'Vite', 'Node.js', 'Express', 'Prisma', 'PostgreSQL'],
-    liveUrl: '#',
-    codeUrl: '#',
+      "An AI-powered healthcare medicine exchange platform that helps hospitals and clinics manage inventory, exchange surplus medicines, track expiry dates, and forecast medicine demand using machine learning.",
+    tech: [
+      "React",
+      "Node.js",
+      "Express",
+      "Prisma",
+      "PostgreSQL",
+      "XGBoost"
+    ],
+    codeUrl: "#",
   },
+
   {
-    id: 'taskflow',
-    title: 'TaskFlow',
+    id: "voice-mail-assistant",
+    title: "Voice Mail Assistant",
     description:
-      'Placeholder — a real-time Kanban-style task manager with drag-and-drop boards and live collaboration between teammates.',
-    tech: ['React', 'Node.js', 'MongoDB', 'Socket.io'],
-    liveUrl: '#',
-    codeUrl: '#',
+      "A voice-controlled email assistant that enables users to compose, send, and manage emails using speech recognition and text-to-speech, improving accessibility and hands-free communication.",
+    tech: [
+      "Python",
+      "Speech Recognition",
+      "Text-to-Speech",
+      "SMTP",
+      "Tkinter"
+    ],
+    codeUrl: "#",
   },
+
   {
-    id: 'shopsphere',
-    title: 'ShopSphere',
+    id: "visionboard",
+    title: "VisionBoard",
     description:
-      'Placeholder — an e-commerce storefront with cart, checkout, and order tracking, built on a headless product catalog.',
-    tech: ['Next.js', 'Stripe', 'PostgreSQL'],
-    liveUrl: '#',
-    codeUrl: '#',
+      "A visual inspiration and idea management platform where users can organize images into customizable boards, discover creative ideas, and save collections for future projects.",
+    tech: [
+      "React",
+      "Node.js",
+      "Express",
+      "MongoDB"
+    ],
+    codeUrl: "#",
   },
+
   {
-    id: 'weatherpulse',
-    title: 'WeatherPulse',
+    id: "ai-response-studio",
+    title: "AI Response Studio",
     description:
-      'Placeholder — a weather dashboard with animated forecasts, saved locations, and historical trend charts.',
-    tech: ['React', 'OpenWeather API', 'Chart.js'],
-    liveUrl: '#',
-    codeUrl: '#',
+      "A text-based AI application that generates intelligent responses from user prompts using large language models, featuring a clean chat interface and real-time AI interaction.",
+    tech: [
+      "React",
+      "Node.js",
+      "Express",
+      "Gemini API"
+    ],
+    codeUrl: "#",
   },
+
   {
-    id: 'devconnect',
-    title: 'DevConnect',
+    id: "emotion-detection",
+    title: "Emotion Detection System",
     description:
-      'Placeholder — a developer-focused social platform for sharing projects, with JWT-based auth and threaded comments.',
-    tech: ['React', 'Express', 'PostgreSQL', 'JWT'],
-    liveUrl: '#',
-    codeUrl: '#',
+      "A computer vision application that detects human facial emotions in real time using deep learning, classifying expressions such as happy, sad, angry, surprised, and neutral.",
+    tech: [
+      "Python",
+      "OpenCV",
+      ",TensorFlow",
+      "Keras"
+    ],
+    codeUrl: "https://github.com/Sumit-Thapaliya/Emotion-Detention",
   },
+
 ];
 
 export default projects;
