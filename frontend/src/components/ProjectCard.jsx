@@ -54,9 +54,6 @@ export default function ProjectCard({ project, index }) {
             <a href={project.codeUrl} aria-label={`${project.title} source code`}>
               Code
             </a>
-            <a href={project.liveUrl} aria-label={`${project.title} live demo`}>
-              Live ↗
-            </a>
           </div>
         </div>
 
