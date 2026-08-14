@@ -8,9 +8,6 @@ backend/.env
 # Logs
 *.log
 
-# OS files
-
-
 # Build folders
 dist/
 build/
