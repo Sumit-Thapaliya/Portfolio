@@ -4,7 +4,7 @@ import { sendContactMessage } from '../lib/api.js';
 import './Contact.css';
 
 const SOCIALS = [
-  { label: 'GitHub', href: 'https://github.com/your-username' },
+  { label: 'GitHub', href: 'https://github.com/Sumit-Thapaliya' },
   { label: 'LinkedIn', href: 'https://linkedin.com/in/your-username' },
   { label: 'Twitter / X', href: 'https://x.com/your-username' },
 ];
@@ -69,10 +69,6 @@ export default function Contact() {
               Have a project, role, or idea in mind? Send a message and I'll
               get back to you directly at my inbox.
             </p>
-
-            <a className="contact__email" href="mailto:sumitthapaliya63@gmail.com">
-              sumitthapaliya63@gmail.com
-            </a>
 
             <ul className="contact__socials">
               {SOCIALS.map((s) => (
