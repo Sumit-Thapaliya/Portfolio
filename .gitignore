@@ -17,10 +17,3 @@ build/
 
 # Coverage
 coverage/
-
-# Prisma generated database (if applicable)
-database/
-
-# Python cache (if your ML project exists)
-__pycache__/
-*.py[cod]
