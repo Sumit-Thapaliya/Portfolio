@@ -1,13 +1,13 @@
-import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import useMagnetic from '../hooks/useMagnetic.js';
-import './Hero.css';
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import useMagnetic from "../hooks/useMagnetic.js";
+import "./Hero.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const NAME = 'Sumit Thapaliya';
-const ROLES = ['Full Stack Developer', 'React & Node.js', 'Building MedBridge'];
+const NAME = "Sumit Thapaliya";
+const ROLES = ["Full Stack Developer", "React & Node.js", "Building MedBridge"];
 
 export default function Hero({ ready }) {
   const nameRef = useRef(null);
@@ -21,9 +21,9 @@ export default function Hero({ ready }) {
   useEffect(() => {
     if (!ready) return;
 
-    const letters = nameRef.current.querySelectorAll('.hero__letter');
+    const letters = nameRef.current.querySelectorAll(".hero__letter");
 
-    const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
     tl.set(letters, { opacity: 0, y: 28, rotateX: -25 })
       .to(letters, {
@@ -35,20 +35,24 @@ export default function Hero({ ready }) {
       })
       .to(
         nameRef.current,
-        { backgroundPosition: '200% center', duration: 2.2, ease: 'sine.inOut' },
-        '-=0.2'
+        {
+          backgroundPosition: "200% center",
+          duration: 2.2,
+          ease: "sine.inOut",
+        },
+        "-=0.2",
       )
       .fromTo(
         subRef.current,
         { opacity: 0, y: 16 },
         { opacity: 1, y: 0, duration: 0.6 },
-        '-=0.3'
+        "-=0.3",
       )
       .fromTo(
         metaRef.current,
         { opacity: 0, y: 16 },
         { opacity: 1, y: 0, duration: 0.6 },
-        '-=0.35'
+        "-=0.35",
       );
   }, [ready]);
 
@@ -98,10 +102,12 @@ export default function Hero({ ready }) {
     const container = nameRef.current;
     if (!container) return;
 
-    const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const isFinePointer = window.matchMedia(
+      "(hover: hover) and (pointer: fine)",
+    ).matches;
     if (!isFinePointer) return;
 
-    const letters = Array.from(container.querySelectorAll('.hero__letter'));
+    const letters = Array.from(container.querySelectorAll(".hero__letter"));
     const RADIUS = 140;
 
     function handleMove(e) {
@@ -117,16 +123,16 @@ export default function Hero({ ready }) {
             y: -strength * 10,
             scale: 1 + strength * 0.2,
             duration: 0.6,
-            ease: 'power3.out',
-            overwrite: 'auto',
+            ease: "power3.out",
+            overwrite: "auto",
           });
         } else {
           gsap.to(letter, {
             y: 0,
             scale: 1,
             duration: 0.9,
-            ease: 'elastic.out(1, 0.75)',
-            overwrite: 'auto',
+            ease: "elastic.out(1, 0.75)",
+            overwrite: "auto",
           });
         }
       }
@@ -137,15 +143,15 @@ export default function Hero({ ready }) {
         y: 0,
         scale: 1,
         duration: 0.6,
-        ease: 'elastic.out(1, 0.5)',
+        ease: "elastic.out(1, 0.5)",
       });
     }
 
-    window.addEventListener('mousemove', handleMove);
-    container.addEventListener('mouseleave', handleLeave);
+    window.addEventListener("mousemove", handleMove);
+    container.addEventListener("mouseleave", handleLeave);
     return () => {
-      window.removeEventListener('mousemove', handleMove);
-      container.removeEventListener('mouseleave', handleLeave);
+      window.removeEventListener("mousemove", handleMove);
+      container.removeEventListener("mouseleave", handleLeave);
     };
   }, [ready]);
 
@@ -154,19 +160,19 @@ export default function Hero({ ready }) {
   useEffect(() => {
     if (!ready) return;
     const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
+      "(prefers-reduced-motion: reduce)",
     ).matches;
     if (prefersReducedMotion) return;
 
     const trigger = ScrollTrigger.create({
-      trigger: '.hero',
-      start: 'top top',
-      end: 'bottom top',
+      trigger: ".hero",
+      start: "top top",
+      end: "bottom top",
       scrub: 0.6,
-      animation: gsap.to(metaRef.current.closest('.hero__inner'), {
+      animation: gsap.to(metaRef.current.closest(".hero__inner"), {
         yPercent: -18,
         opacity: 0.15,
-        ease: 'none',
+        ease: "none",
       }),
     });
 
@@ -178,10 +184,14 @@ export default function Hero({ ready }) {
       <div className="sb-container hero__inner">
         <span className="sb-eyebrow">Portfolio / 2026</span>
 
-        <h1 className="hero__name sb-gradient-text" ref={nameRef} aria-label={NAME}>
-          {NAME.split('').map((char, i) => (
+        <h1
+          className="hero__name sb-gradient-text"
+          ref={nameRef}
+          aria-label={NAME}
+        >
+          {NAME.split("").map((char, i) => (
             <span className="hero__letter" key={i}>
-              {char === ' ' ? '\u00A0' : char}
+              {char === " " ? "\u00A0" : char}
             </span>
           ))}
         </h1>
@@ -193,11 +203,11 @@ export default function Hero({ ready }) {
 
         <div className="hero__meta" ref={metaRef}>
           <p className="hero__summary">
-            I design and build full-stack web applications end to end — from
-            database schema to the pixels people touch. Currently building{' '}
-            <strong>MedBridge</strong>, a medicine exchange platform helping
-            hospitals and clinics manage inventory, trade stock, and track
-            expiry in real time.
+            I'm a full-stack developer passionate about building modern web
+            applications from concept to deployment. I enjoy creating responsive
+            user interfaces, designing scalable backend systems, and
+            continuously exploring new technologies to deliver meaningful
+            digital experiences.
           </p>
           <div className="hero__actions">
             <a
