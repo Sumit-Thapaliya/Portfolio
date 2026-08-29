@@ -5,7 +5,7 @@ import './Contact.css';
 
 const SOCIALS = [
   { label: 'GitHub', href: 'https://github.com/Sumit-Thapaliya' },
-  { label: 'LinkedIn', href: 'https://linkedin.com/in/your-username' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/sumit-thapaliya-8b4b84426/' },
   { label: 'Twitter / X', href: 'https://x.com/your-username' },
 ];
 
