@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react';
 import useScramble from '../hooks/useScramble.js';
+import site from '../data/site.js';
 import './Navbar.css';
 
-const LINKS = [
-  { href: '#about', label: 'About' },
-  { href: '#skills', label: 'Skills' },
-  { href: '#projects', label: 'Projects' },
-  { href: '#contact', label: 'Contact' },
-];
+const LINKS = site.nav;
 
 function ScrambleLink({ href, label }) {
   const { ref, handleMouseEnter, handleMouseLeave } = useScramble();
@@ -30,9 +26,9 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className={`nav ${scrolled ? 'nav--scrolled' : ''}`}>
+    <nav className={`nav ${scrolled ? 'nav--scrolled' : ''}`} aria-label="Primary">
       <div className="sb-container nav__inner">
-        <a href="#top" className="nav__brand">
+        <a href="#top" className="nav__brand" aria-label={`${site.name} – Software Developer portfolio home`}>
           ST<span className="nav__brand-dot">.</span>
         </a>
         <ul className="nav__links">

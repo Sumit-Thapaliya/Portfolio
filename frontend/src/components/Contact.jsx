@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { sendContactMessage } from '../lib/api.js';
+import site from '../data/site.js';
+import LineReveal from './ui/LineReveal.jsx';
 import './Contact.css';
 
-const SOCIALS = [
-  { label: 'GitHub', href: 'https://github.com/Sumit-Thapaliya' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/sumit-thapaliya-8b4b84426/' },
-  { label: 'Twitter / X', href: 'https://x.com/your-username' },
-];
+const SOCIALS = site.socials;
 
 const STATUS = {
   IDLE: 'idle',
@@ -64,16 +62,29 @@ export default function Contact() {
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: 0.55 }}
           >
-            <h2 className="contact__heading sb-gradient-text">Let's build something.</h2>
+            <h2 className="contact__heading">
+              <LineReveal>Let's build</LineReveal>
+              <LineReveal delay={0.08}>
+                <span className="sb-gradient-text">something.</span>
+              </LineReveal>
+            </h2>
             <p className="contact__text">
-              Have a project, role, or idea in mind? Send a message and I'll
-              get back to you directly at my inbox.
+              Looking for a software developer in Nepal or a remote full-stack
+              developer? Have a project, role, or idea in mind? Send a message
+              and I'll get back to you directly — usually within a day.
             </p>
+            <a className="contact__email" href={`mailto:${site.email}`}>
+              {site.email}
+            </a>
 
             <ul className="contact__socials">
               {SOCIALS.map((s) => (
                 <li key={s.label}>
-                  <a href={s.href} target="_blank" rel="noreferrer">
+                  <a
+                    href={s.href}
+                    target={s.href.startsWith('http') ? '_blank' : undefined}
+                    rel={s.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  >
                     {s.label} ↗
                   </a>
                 </li>
@@ -130,7 +141,7 @@ export default function Contact() {
 
             <button
               type="submit"
-              className="contact__submit"
+              className="contact__submit shimmer-btn"
               disabled={status === STATUS.SENDING}
             >
               {status === STATUS.SENDING ? 'Sending…' : 'Send Message'}

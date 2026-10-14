@@ -1,62 +1,78 @@
-import { useEffect, useRef } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import useMagnetic from "../hooks/useMagnetic.js";
+import site from "../data/site.js";
+import ShimmerButton from "./ui/ShimmerButton.jsx";
 import "./Hero.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const NAME = "Sumit Thapaliya";
-const ROLES = ["Full Stack Developer", "React & Node.js", "Building MedBridge"];
+// The Three.js scene is code-split: it never blocks first paint or the HTML
+// crawlers read, and is skipped entirely for reduced-motion / tiny devices.
+const HeroScene = lazy(() => import("./three/HeroScene.jsx"));
+
+const NAME = site.name;
+const ROLES = site.roles;
+
+function useCanRun3D() {
+  const [ok, setOk] = useState(false);
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const small = window.innerWidth < 640;
+    const lowMem = navigator.deviceMemory && navigator.deviceMemory < 2;
+    setOk(!reduced && !small && !lowMem);
+  }, []);
+  return ok;
+}
 
 export default function Hero({ ready }) {
   const nameRef = useRef(null);
-  const subRef = useRef(null);
-  const metaRef = useRef(null);
+  const greetRef = useRef(null);
   const roleRef = useRef(null);
-  const primaryBtn = useMagnetic(0.3);
-  const ghostBtn = useMagnetic(0.3);
+  const typeRef = useRef(null);
+  const metaRef = useRef(null);
+  const show3D = useCanRun3D();
 
   // Letter-by-letter name reveal, runs once `ready` (intro finished) is true
   useEffect(() => {
     if (!ready) return;
 
     const letters = nameRef.current.querySelectorAll(".hero__letter");
-
     const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
-    tl.set(letters, { opacity: 0, y: 28, rotateX: -25 })
-      .to(letters, {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        duration: 0.9,
-        stagger: 0.028,
-      })
+    tl.fromTo(
+      greetRef.current,
+      { opacity: 0, x: -16 },
+      { opacity: 1, x: 0, duration: 0.6 },
+    )
+      .set(letters, { opacity: 0, y: 28, rotateX: -25 }, "<")
+      .to(
+        letters,
+        { opacity: 1, y: 0, rotateX: 0, duration: 0.9, stagger: 0.028 },
+        "-=0.3",
+      )
       .to(
         nameRef.current,
-        {
-          backgroundPosition: "200% center",
-          duration: 2.2,
-          ease: "sine.inOut",
-        },
+        { backgroundPosition: "200% center", duration: 2.2, ease: "sine.inOut" },
         "-=0.2",
       )
       .fromTo(
-        subRef.current,
-        { opacity: 0, y: 16 },
-        { opacity: 1, y: 0, duration: 0.6 },
-        "-=0.3",
+        roleRef.current,
+        { opacity: 0, y: 16, clipPath: "inset(0 100% 0 0)" },
+        { opacity: 1, y: 0, clipPath: "inset(0 0% 0 0)", duration: 0.9 },
+        "-=1.9",
       )
       .fromTo(
         metaRef.current,
         { opacity: 0, y: 16 },
         { opacity: 1, y: 0, duration: 0.6 },
-        "-=0.35",
+        "<0.35",
       );
+
+    return () => tl.kill();
   }, [ready]);
 
-  // Rotating role typewriter
+  // Rotating role typewriter (decorative; the real H2 stays static for SEO)
   useEffect(() => {
     if (!ready) return;
     let index = 0;
@@ -66,7 +82,7 @@ export default function Hero({ ready }) {
 
     function tick() {
       const current = ROLES[index];
-      const el = roleRef.current;
+      const el = typeRef.current;
       if (!el) return;
 
       if (!deleting) {
@@ -74,7 +90,7 @@ export default function Hero({ ready }) {
         el.textContent = current.slice(0, charIndex);
         if (charIndex === current.length) {
           deleting = true;
-          timeoutId = setTimeout(tick, 1400);
+          timeoutId = setTimeout(tick, 1500);
           return;
         }
       } else {
@@ -88,15 +104,14 @@ export default function Hero({ ready }) {
       timeoutId = setTimeout(tick, deleting ? 35 : 55);
     }
 
-    const startDelay = setTimeout(tick, 1600);
+    const startDelay = setTimeout(tick, 1800);
     return () => {
       clearTimeout(startDelay);
       clearTimeout(timeoutId);
     };
   }, [ready]);
 
-  // Letters magnify and tilt toward the cursor as it passes near the name —
-  // a small "magnetic type" effect that makes the hero feel alive.
+  // Letters magnify toward the cursor as it passes near the name
   useEffect(() => {
     if (!ready) return;
     const container = nameRef.current;
@@ -139,12 +154,7 @@ export default function Hero({ ready }) {
     }
 
     function handleLeave() {
-      gsap.to(letters, {
-        y: 0,
-        scale: 1,
-        duration: 0.6,
-        ease: "elastic.out(1, 0.5)",
-      });
+      gsap.to(letters, { y: 0, scale: 1, duration: 0.6, ease: "elastic.out(1, 0.5)" });
     }
 
     window.addEventListener("mousemove", handleMove);
@@ -155,8 +165,7 @@ export default function Hero({ ready }) {
     };
   }, [ready]);
 
-  // Parallax: as the person scrolls past the hero, the content drifts up
-  // and fades faster than the scroll itself, giving a sense of depth.
+  // Parallax: hero content drifts up and fades as the user scrolls past
   useEffect(() => {
     if (!ready) return;
     const prefersReducedMotion = window.matchMedia(
@@ -169,7 +178,7 @@ export default function Hero({ ready }) {
       start: "top top",
       end: "bottom top",
       scrub: 0.6,
-      animation: gsap.to(metaRef.current.closest(".hero__inner"), {
+      animation: gsap.to(".hero__inner", {
         yPercent: -18,
         opacity: 0.15,
         ease: "none",
@@ -181,53 +190,64 @@ export default function Hero({ ready }) {
 
   return (
     <section id="top" className="hero">
+      {show3D && ready && (
+        <Suspense fallback={null}>
+          <HeroScene />
+        </Suspense>
+      )}
+
       <div className="sb-container hero__inner">
         <span className="sb-eyebrow">Portfolio / 2026</span>
 
-        <h1
-          className="hero__name sb-gradient-text"
-          ref={nameRef}
-          aria-label={NAME}
-        >
-          {NAME.split("").map((char, i) => (
-            <span className="hero__letter" key={i}>
-              {char === " " ? "\u00A0" : char}
-            </span>
-          ))}
+        {/* H1 reads "Hi, I'm Sumit Thapaliya" to crawlers & screen readers */}
+        <h1 className="hero__title">
+          <span className="hero__greeting" ref={greetRef}>
+            {site.greeting}
+          </span>{" "}
+          <span
+            className="hero__name sb-gradient-text"
+            ref={nameRef}
+            aria-label={NAME}
+          >
+            {NAME.split(" ").map((word, w) => (
+              <span className="hero__word" key={w} aria-hidden="true">
+                {word.split("").map((char, i) => (
+                  <span className="hero__letter" key={i}>
+                    {char}
+                  </span>
+                ))}
+              </span>
+            ))}
+          </span>
         </h1>
 
-        <p className="hero__role" ref={subRef}>
-          <span className="hero__role-text" ref={roleRef} />
-          <span className="hero__role-cursor" />
+        {/* Static, descriptive H2 (SEO) */}
+        <h2 className="hero__role" ref={roleRef}>
+          {site.role}
+        </h2>
+
+        {/* Decorative rotating roles */}
+        <p className="hero__type" aria-hidden="true">
+          <span className="hero__type-prompt">&gt;</span>
+          <span className="hero__type-text" ref={typeRef} />
+          <span className="hero__type-cursor" />
         </p>
 
         <div className="hero__meta" ref={metaRef}>
-          <p className="hero__summary">
-            I'm a full-stack developer passionate about building modern web
-            applications from concept to deployment. I enjoy creating responsive
-            user interfaces, designing scalable backend systems, and
-            continuously exploring new technologies to deliver meaningful
-            digital experiences.
-          </p>
+          <p className="hero__summary">{site.summary}</p>
+          <p className="hero__summary hero__summary--secondary">{site.summary2}</p>
+
           <div className="hero__actions">
-            <a
-              href="#projects"
-              className="hero__btn hero__btn--primary"
-              ref={primaryBtn.ref}
-              onMouseMove={primaryBtn.handleMouseMove}
-              onMouseLeave={primaryBtn.handleMouseLeave}
-            >
+            <ShimmerButton href="#projects" className="hero__btn hero__btn--primary">
               View Projects
-            </a>
-            <a
-              href="#contact"
-              className="hero__btn hero__btn--ghost"
-              ref={ghostBtn.ref}
-              onMouseMove={ghostBtn.handleMouseMove}
-              onMouseLeave={ghostBtn.handleMouseLeave}
-            >
+            </ShimmerButton>
+            <ShimmerButton href="#contact" ghost className="hero__btn hero__btn--ghost">
               Get in Touch
-            </a>
+            </ShimmerButton>
+            <span className="hero__status">
+              <span className="hero__status-dot" />
+              {site.availability}
+            </span>
           </div>
         </div>
       </div>

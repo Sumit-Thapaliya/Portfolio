@@ -71,7 +71,38 @@ mail server) — just update `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` /
   environment variables from `.env.example` in your host's dashboard, and
   set `CLIENT_ORIGIN` to your deployed frontend's URL (for CORS).
 
+## 5. SEO checklist (already wired up)
+
+- `frontend/index.html` — title, meta description, canonical
+  (`https://sumitthapaliya.com.np/`), Open Graph / Twitter cards, JSON-LD
+  (`Person`, `WebSite`, `ProfilePage`), favicon + manifest.
+- `frontend/public/robots.txt` and `frontend/public/sitemap.xml`.
+- `frontend/public/og-image.png` — 1200×630 social preview card.
+- **Build-time prerender**: `vite.config.js` → `seoPrerender()` injects the
+  real page content (H1, H2s, about copy, skills, projects) into
+  `<div id="root">` of `dist/index.html`, generated from `src/data/*.js`.
+  Crawlers that don't execute JS still get a full page; React replaces it on
+  mount. Edit `src/data/site.js` / `projects.js` / `skills.js` and both the
+  app and the static HTML update together.
+- Single-page site ⇒ one public URL ⇒ one title/description. If you add real
+  routes later (e.g. `/blog`), give each its own `<title>`/description and add
+  it to `sitemap.xml`.
+
+**Domain:** Vercel currently 308-redirects the apex to `www.`. For the canonical
+to be honoured, set **sumitthapaliya.com.np** as the primary domain in
+Vercel → Project → Settings → Domains (so `www` → apex, not the reverse).
+Then verify in Google Search Console and submit `/sitemap.xml`.
+
 ## Tech notes
+
+- **3D hero**: `components/three/HeroScene.jsx` — React Three Fiber scene
+  (wireframe icosahedron + additive particle field) that follows the cursor
+  and dollies back on scroll. Lazy-loaded in its own chunk, skipped for
+  `prefers-reduced-motion`, < 640px viewports and low-memory devices.
+- **Magic-UI style primitives**: `components/ui/` — `BorderBeam`,
+  `ShimmerButton`, `TextReveal` (scroll-linked), `NumberTicker`,
+  `LineReveal` (masked heading entrance), `Spotlight` — written in plain CSS +
+  Framer Motion (no Tailwind dependency).
 
 - **Intro**: `IntroLoader.jsx` — a short terminal boot sequence followed
   by a GSAP curtain-reveal, skipped automatically if the visitor has

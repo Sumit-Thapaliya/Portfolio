@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!--
+    This is a single-page portfolio: the homepage is the only real public route.
+    Sections (#about, #skills, #projects, #contact) are in-page anchors, not
+    separate URLs, so Google treats them as part of the homepage. Add new <url>
+    entries here only when real routes (e.g. /blog, /projects/medbridge) are added.
+  -->
+  <url>
+    <loc>https://sumitthapaliya.com.np/</loc>
+    <lastmod>2026-10-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://sumitthapaliya.com.np/og-image.png</image:loc>
+      <image:title>Sumit Thapaliya – Software Developer &amp; Full Stack Developer, Nepal</image:title>
+      <image:caption>Sumit Thapaliya Portfolio cover image</image:caption>
+    </image:image>
+  </url>
+</urlset>

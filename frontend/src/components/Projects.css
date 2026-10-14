@@ -24,3 +24,56 @@
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 26px;
 }
+
+.projects {
+  overflow: hidden;
+}
+
+.projects__ghost {
+  position: absolute;
+  top: 6%;
+  left: 0;
+  font-family: var(--sb-font-hero);
+  font-size: clamp(140px, 26vw, 360px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(232, 237, 244, 0.07);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 0;
+}
+
+.projects .sb-container {
+  position: relative;
+  z-index: 1;
+}
+
+.projects__grid .pcard--featured {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 860px) {
+  .pcard--featured .pcard__inner {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 40px;
+    align-items: end;
+  }
+  .pcard--featured .pcard__top {
+    grid-column: 1 / -1;
+  }
+  .pcard--featured .pcard__desc {
+    font-size: 16px;
+    min-height: 0;
+  }
+  .pcard--featured .pcard__title {
+    font-size: 34px;
+  }
+  .pcard--featured .pcard__tech {
+    margin-top: 0;
+    justify-content: flex-end;
+  }
+}

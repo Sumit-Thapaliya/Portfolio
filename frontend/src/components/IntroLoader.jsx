@@ -5,7 +5,7 @@ import './IntroLoader.css';
 const BOOT_LINES = [
   '$ initializing portfolio…',
   '$ loading components… OK',
-  '$ connecting to sumit_thapaliya.dev',
+  '$ connecting to sumitthapaliya.com.np',
   '$ build complete ✓',
 ];
 
@@ -25,7 +25,16 @@ export default function IntroLoader({ onFinish }) {
       '(prefers-reduced-motion: reduce)'
     ).matches;
 
-    if (prefersReducedMotion) {
+    // Skip for reduced-motion users and for repeat views in the same session
+    // (the cinematic intro should impress once, not annoy every reload).
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem('intro-seen') === '1';
+      sessionStorage.setItem('intro-seen', '1');
+    } catch {
+      /* storage unavailable */
+    }
+    if (prefersReducedMotion || seen) {
       onFinish();
       return;
     }

@@ -1,10 +1,6 @@
 
 **/node_modules/
 
-# Ignore backend environment file
-backend/.env
-
-
 # Logs
 *.log
 

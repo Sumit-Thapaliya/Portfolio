@@ -4,6 +4,7 @@ import IntroLoader from './components/IntroLoader.jsx';
 import ParticleBackground from './components/ParticleBackground.jsx';
 import CustomCursor from './components/CustomCursor.jsx';
 import ScrollProgress from './components/ScrollProgress.jsx';
+import Spotlight from './components/ui/Spotlight.jsx';
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
 import About from './components/About.jsx';
@@ -21,16 +22,20 @@ export default function App() {
     <>
       {!introDone && <IntroLoader onFinish={() => setIntroDone(true)} />}
       <div className="sb-grain" />
+      <div className="dot-pattern" aria-hidden="true" />
+      <Spotlight />
       <ScrollProgress />
       <CustomCursor />
       <ParticleBackground />
       <Navbar />
-      <Hero ready={introDone} />
-      <About />
-      <Skills />
-      <Marquee />
-      <Projects />
-      <Contact />
+      <main>
+        <Hero ready={introDone} />
+        <About />
+        <Skills />
+        <Marquee />
+        <Projects />
+        <Contact />
+      </main>
       <Footer />
     </>
   );

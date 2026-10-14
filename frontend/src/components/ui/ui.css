@@ -1,0 +1,156 @@
+/* ===================================================================
+   Magic-UI style primitives, implemented in plain CSS for this project
+   =================================================================== */
+
+/* ---- BorderBeam: a light beam that travels around an element's edge ---- */
+@property --beam-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.border-beam {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px; /* beam thickness */
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0 70%,
+    var(--beam-color-a, var(--sb-teal)) 85%,
+    var(--beam-color-b, var(--sb-amber)) 95%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: var(--beam-opacity, 0);
+  transition: opacity 0.5s var(--sb-ease-smooth);
+  animation: beam-spin var(--beam-duration, 6s) linear infinite;
+}
+
+.border-beam--always {
+  --beam-opacity: 1;
+}
+
+@keyframes beam-spin {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+/* ---- ShimmerButton ---- */
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.shimmer-btn::after {
+  content: '';
+  position: absolute;
+  inset: -40% auto -40% -60%;
+  width: 40%;
+  transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  animation: shimmer-sweep 2.8s var(--sb-ease-smooth) infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.shimmer-btn--ghost::after {
+  background: linear-gradient(90deg, transparent, rgba(52, 228, 192, 0.25), transparent);
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    left: -60%;
+  }
+  60%,
+  100% {
+    left: 130%;
+  }
+}
+
+/* ---- TextReveal (scroll-linked word reveal) ---- */
+.text-reveal {
+  display: inline;
+}
+
+.text-reveal__word {
+  display: inline-block;
+  margin-right: 0.28em;
+  will-change: opacity, transform;
+}
+
+/* ---- Spotlight: soft radial light that follows the cursor ---- */
+.spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    600px circle at var(--spot-x, 50%) var(--spot-y, 30%),
+    rgba(52, 228, 192, 0.07),
+    transparent 60%
+  );
+  transition: background 0.2s linear;
+}
+
+/* ---- Dot-grid background pattern ---- */
+.dot-pattern {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(232, 237, 244, 0.09) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, #000 20%, transparent 80%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, #000 20%, transparent 80%);
+}
+
+/* ---- Section heading: clip-path line reveal ---- */
+.line-reveal {
+  display: block;
+  overflow: hidden;
+}
+
+.line-reveal__inner {
+  display: block;
+  will-change: transform;
+}
+
+/* ---- Stat (NumberTicker) ---- */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat__value {
+  font-family: var(--sb-font-hero);
+  font-size: clamp(30px, 3.6vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--sb-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__label {
+  font-family: var(--sb-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sb-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .border-beam,
+  .shimmer-btn::after {
+    animation: none;
+  }
+}

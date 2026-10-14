@@ -1,0 +1,28 @@
+.hero-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  animation: hero-scene-in 1.6s ease 0.4s forwards;
+  /* Keep the 3D object on the right half on wide screens, centered on mobile */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 35%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 35%, #000 100%);
+}
+
+.hero-scene canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (min-width: 960px) {
+  .hero-scene {
+    left: 30%;
+  }
+}
+
+@keyframes hero-scene-in {
+  to {
+    opacity: 1;
+  }
+}

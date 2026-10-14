@@ -133,3 +133,13 @@ textarea:focus-visible {
     scroll-behavior: auto !important;
   }
 }
+
+/* Gradient text inside masked line reveals needs inline-block so the clip works */
+.line-reveal .sb-gradient-text {
+  display: inline-block;
+  padding-bottom: 0.08em; /* keep descenders inside the clip */
+}
+
+.line-reveal__inner {
+  padding-bottom: 0.08em;
+}

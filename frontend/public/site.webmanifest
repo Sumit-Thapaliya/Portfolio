@@ -1,0 +1,14 @@
+{
+  "name": "Sumit Thapaliya Portfolio – Software Developer, Nepal",
+  "short_name": "Sumit Thapaliya",
+  "description": "Portfolio of Sumit Thapaliya, software developer and full stack developer from Nepal building React, Node.js and AI-powered web applications.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0e14",
+  "theme_color": "#0a0e14",
+  "icons": [
+    { "src": "/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

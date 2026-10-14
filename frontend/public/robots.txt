@@ -1,0 +1,6 @@
+# https://sumitthapaliya.com.np/robots.txt
+User-agent: *
+Allow: /
+
+# Nothing private to hide; keep build assets crawlable so Google can render the page.
+Sitemap: https://sumitthapaliya.com.np/sitemap.xml
