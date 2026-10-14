@@ -91,3 +91,7 @@
     gap: 18px;
   }
 }
+
+.nav--away {
+  transform: translateY(-110%);
+}

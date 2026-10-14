@@ -65,23 +65,64 @@
 }
 
 .hero__greeting {
-  font-family: var(--sb-font-mono);
-  font-size: clamp(15px, 1.6vw, 19px);
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  font-family: var(--sb-font-serif);
+  font-style: italic;
+  font-size: clamp(24px, 2.8vw, 38px);
+  font-weight: 400;
+  letter-spacing: 0;
   color: var(--sb-text-muted);
+  margin-bottom: 6px;
+}
+
+.hero__name-wrap {
+  position: relative;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .hero__name {
+  position: relative;
+  z-index: 1;
   font-family: var(--sb-font-hero);
-  font-size: clamp(46px, 8.4vw, 118px);
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.02;
+  font-size: clamp(66px, 11.5vw, 178px);
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  line-height: 0.9;
+  text-transform: uppercase;
   display: flex;
   flex-wrap: wrap;
-  column-gap: 0.28em;
+  column-gap: 0.22em;
   background-position: 0% center;
+  /* chromatic split driven by scroll velocity */
+  filter: drop-shadow(calc(var(--vel) * 10px) 0 0 rgba(52, 228, 192, 0.55))
+    drop-shadow(calc(var(--vel) * -10px) 0 0 rgba(255, 180, 84, 0.45));
+  transition: filter 0.15s linear;
+}
+
+/* Outlined ghost copy behind the name, trails the cursor */
+.hero__ghost {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  font-family: var(--sb-font-hero);
+  font-size: clamp(66px, 11.5vw, 178px);
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(52, 228, 192, 0.35);
+  white-space: nowrap;
+  pointer-events: none;
+  translate: 10px 8px;
+  will-change: transform;
+}
+
+@media (max-width: 760px) {
+  .hero__ghost {
+    display: none;
+  }
 }
 
 /* Words never break mid-way; letters inside animate individually */

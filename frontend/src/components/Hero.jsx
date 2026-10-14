@@ -16,29 +16,26 @@ export default function Hero({ ready }) {
   const roleRef = useRef(null);
   const typeRef = useRef(null);
   const metaRef = useRef(null);
+  const ghostRef = useRef(null);
 
-  // Letter-by-letter name reveal, runs once `ready` (intro finished) is true
+  // 1. Entrance: greeting slides in, letters flip up, role wipes, meta fades
   useEffect(() => {
     if (!ready) return;
 
     const letters = nameRef.current.querySelectorAll(".hero__letter");
     const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
-    tl.fromTo(
-      greetRef.current,
-      { opacity: 0, x: -16 },
-      { opacity: 1, x: 0, duration: 0.6 },
-    )
-      .set(letters, { opacity: 0, y: 28, rotateX: -25 }, "<")
+    tl.fromTo(greetRef.current, { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.6 })
+      .set(letters, { opacity: 0, y: 60, rotateX: -70, filter: "blur(8px)" }, "<")
       .to(
         letters,
-        { opacity: 1, y: 0, rotateX: 0, duration: 0.9, stagger: 0.028 },
+        { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)", duration: 1.1, stagger: 0.035 },
         "-=0.3",
       )
       .to(
         nameRef.current,
         { backgroundPosition: "200% center", duration: 2.2, ease: "sine.inOut" },
-        "-=0.2",
+        "-=0.4",
       )
       .fromTo(
         roleRef.current,
@@ -56,7 +53,7 @@ export default function Hero({ ready }) {
     return () => tl.kill();
   }, [ready]);
 
-  // Rotating role typewriter (decorative; the real H2 stays static for SEO)
+  // 2. Rotating role typewriter (decorative; the real H2 stays static for SEO)
   useEffect(() => {
     if (!ready) return;
     let index = 0;
@@ -95,15 +92,13 @@ export default function Hero({ ready }) {
     };
   }, [ready]);
 
-  // Letters magnify toward the cursor as it passes near the name
+  // 3. Magnetic type: letters lift toward the cursor
   useEffect(() => {
     if (!ready) return;
     const container = nameRef.current;
     if (!container) return;
 
-    const isFinePointer = window.matchMedia(
-      "(hover: hover) and (pointer: fine)",
-    ).matches;
+    const isFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     if (!isFinePointer) return;
 
     const letters = Array.from(container.querySelectorAll(".hero__letter"));
@@ -119,15 +114,15 @@ export default function Hero({ ready }) {
         if (dist < RADIUS) {
           const strength = 1 - dist / RADIUS;
           gsap.to(letter, {
-            y: -strength * 10,
-            scale: 1 + strength * 0.2,
+            yPercent: -strength * 12,
+            scale: 1 + strength * 0.18,
             duration: 0.6,
             ease: "power3.out",
             overwrite: "auto",
           });
         } else {
           gsap.to(letter, {
-            y: 0,
+            yPercent: 0,
             scale: 1,
             duration: 0.9,
             ease: "elastic.out(1, 0.75)",
@@ -138,7 +133,7 @@ export default function Hero({ ready }) {
     }
 
     function handleLeave() {
-      gsap.to(letters, { y: 0, scale: 1, duration: 0.6, ease: "elastic.out(1, 0.5)" });
+      gsap.to(letters, { yPercent: 0, scale: 1, duration: 0.6, ease: "elastic.out(1, 0.5)" });
     }
 
     window.addEventListener("mousemove", handleMove);
@@ -149,27 +144,60 @@ export default function Hero({ ready }) {
     };
   }, [ready]);
 
-  // Parallax: hero content drifts up and fades as the user scrolls past
+  // 3b. Ghost outline: an outlined copy of the name trails the cursor with lag
+  useEffect(() => {
+    if (!ready || !ghostRef.current) return;
+    const isFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    if (!isFinePointer) return;
+    const toX = gsap.quickTo(ghostRef.current, "x", { duration: 0.9, ease: "power3.out" });
+    const toY = gsap.quickTo(ghostRef.current, "y", { duration: 0.9, ease: "power3.out" });
+    function onMove(e) {
+      const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+      const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+      toX(nx * -22);
+      toY(ny * -16);
+    }
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [ready]);
+
+  // 4. Scroll exit: letters scatter on individual paths with blur, the rest of
+  //    the hero drifts up and fades — scrubbed to the scrollbar.
   useEffect(() => {
     if (!ready) return;
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) return;
 
-    const trigger = ScrollTrigger.create({
-      trigger: ".hero",
-      start: "top top",
-      end: "bottom top",
-      scrub: 0.6,
-      animation: gsap.to(".hero__inner", {
-        yPercent: -18,
-        opacity: 0.15,
-        ease: "none",
-      }),
+    const letters = nameRef.current.querySelectorAll(".hero__letter");
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.8,
+        },
+      });
+      tl.to(
+        letters,
+        {
+          x: () => gsap.utils.random(-260, 260),
+          y: () => gsap.utils.random(-320, -80),
+          rotation: () => gsap.utils.random(-40, 40),
+          opacity: 0,
+          filter: "blur(10px)",
+          ease: "power2.in",
+          stagger: { each: 0.02, from: "random" },
+        },
+        0,
+      ).to(
+        [greetRef.current, roleRef.current, metaRef.current, ghostRef.current, ".hero__type"],
+        { yPercent: -60, opacity: 0, filter: "blur(6px)", ease: "power1.in", stagger: 0.04 },
+        0,
+      );
     });
 
-    return () => trigger.kill();
+    return () => ctx.revert();
   }, [ready]);
 
   return (
@@ -182,11 +210,11 @@ export default function Hero({ ready }) {
           <span className="hero__greeting" ref={greetRef}>
             {site.greeting}
           </span>{" "}
-          <span
-            className="hero__name sb-gradient-text"
-            ref={nameRef}
-            aria-label={NAME}
-          >
+          <span className="hero__name-wrap">
+          <span className="hero__ghost" ref={ghostRef} aria-hidden="true">
+            {NAME}
+          </span>
+          <span className="hero__name sb-gradient-text" ref={nameRef} aria-label={NAME}>
             {NAME.split(" ").map((word, w) => (
               <span className="hero__word" key={w} aria-hidden="true">
                 {word.split("").map((char, i) => (
@@ -196,6 +224,7 @@ export default function Hero({ ready }) {
                 ))}
               </span>
             ))}
+          </span>
           </span>
         </h1>
 

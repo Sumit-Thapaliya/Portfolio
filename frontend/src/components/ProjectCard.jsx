@@ -5,8 +5,9 @@ import BorderBeam from './ui/BorderBeam.jsx';
 import './ProjectCard.css';
 
 const MAX_TILT = 8; // degrees
+const HUES = [168, 32, 205, 285, 140, 12]; // per-card cover tint
 
-export default function ProjectCard({ project, index }) {
+export default function ProjectCard({ project, index, horizontal = false }) {
   const cardRef = useRef(null);
   const titleScramble = useScramble();
 
@@ -39,16 +40,32 @@ export default function ProjectCard({ project, index }) {
     <motion.article
       className="pcard"
       ref={cardRef}
-      onMouseMove={handleMouseMove}
+      data-cursor={hasLive || hasCode ? 'Open' : undefined}
+      onClick={() => {
+        const url = project.liveUrl || project.codeUrl;
+        if (url) window.open(url, '_blank', 'noopener,noreferrer');
+      }}
+      onMouseMove={horizontal ? undefined : handleMouseMove}
       onMouseEnter={titleScramble.handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      initial={{ opacity: 0, y: 60, rotateZ: index % 2 === 0 ? -2 : 2, filter: 'blur(6px)' }}
-      whileInView={{ opacity: 1, y: 0, rotateZ: 0, filter: 'blur(0px)' }}
+      // Horizontal gallery: GSAP owns `transform`, so framer only fades.
+      initial={horizontal ? { opacity: 0 } : { opacity: 0, y: 60, rotateZ: index % 2 === 0 ? -2 : 2, filter: 'blur(6px)' }}
+      animate={horizontal ? { opacity: 1 } : undefined}
+      whileInView={horizontal ? undefined : { opacity: 1, y: 0, rotateZ: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.7, delay: (index % 3) * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      style={horizontal ? { transform: 'none' } : undefined}
     >
       <BorderBeam duration={5 + (index % 3)} />
       <div className="pcard__glow" />
+      <div className="pcard__cover" style={{ '--hue': HUES[index % HUES.length] }} aria-hidden="true">
+        <span className="pcard__cover-orb" />
+        <span className="pcard__cover-orb pcard__cover-orb--b" />
+        <span className="pcard__cover-grid" />
+        <span className="pcard__cover-mono">{project.title.slice(0, 2)}</span>
+        <span className="pcard__cover-shine" />
+        <span className="pcard__cover-tag">{project.tagline}</span>
+      </div>
       <div className="pcard__inner">
         <div className="pcard__top">
           <span className="pcard__index">
@@ -57,7 +74,7 @@ export default function ProjectCard({ project, index }) {
           </span>
           <div className="pcard__links">
             {hasLive && (
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                 Live ↗
               </a>
             )}
@@ -67,6 +84,7 @@ export default function ProjectCard({ project, index }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${project.title} source code on GitHub`}
+                onClick={(e) => e.stopPropagation()}
               >
                 Code ↗
               </a>
@@ -74,6 +92,7 @@ export default function ProjectCard({ project, index }) {
           </div>
         </div>
 
+        <span className="pcard__bignum" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
         <div>
           <h3 className="pcard__title" ref={titleScramble.ref}>
             {project.title}

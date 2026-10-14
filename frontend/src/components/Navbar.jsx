@@ -16,17 +16,24 @@ function ScrambleLink({ href, label }) {
 
 export default function Navbar({ ready = true }) {
   const [scrolled, setScrolled] = useState(false);
+  const [away, setAway] = useState(false);
 
   useEffect(() => {
+    let lastY = window.scrollY;
     function onScroll() {
-      setScrolled(window.scrollY > 40);
+      const y = window.scrollY;
+      setScrolled(y > 40);
+      // Hide when scrolling down past the hero, reveal on any upward move
+      if (y > lastY + 4 && y > window.innerHeight * 0.6) setAway(true);
+      else if (y < lastY - 4) setAway(false);
+      lastY = y;
     }
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
-    <nav className={`nav ${scrolled ? 'nav--scrolled' : ''} ${ready ? '' : 'nav--hidden'}`} aria-label="Primary">
+    <nav className={`nav ${scrolled ? 'nav--scrolled' : ''} ${away ? 'nav--away' : ''} ${ready ? '' : 'nav--hidden'}`} aria-label="Primary">
       <div className="sb-container nav__inner">
         <a href="#top" className="nav__brand" aria-label={`${site.name} – Software Developer portfolio home`}>
           ST<span className="nav__brand-dot">.</span>

@@ -132,9 +132,9 @@
 
 .stat__value {
   font-family: var(--sb-font-hero);
-  font-size: clamp(30px, 3.6vw, 44px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: clamp(44px, 4.6vw, 64px);
+  font-weight: 400;
+  letter-spacing: 0.02em;
   line-height: 1;
   color: var(--sb-text);
   font-variant-numeric: tabular-nums;

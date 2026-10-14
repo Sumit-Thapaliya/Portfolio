@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import skills from '../data/skills.js';
 import BorderBeam from './ui/BorderBeam.jsx';
-import LineReveal from './ui/LineReveal.jsx';
+import CharReveal from './ui/CharReveal.jsx';
 import './Skills.css';
 
 const fadeUp = {
@@ -16,7 +16,7 @@ const fadeUp = {
 export default function Skills() {
   return (
     <section id="skills" className="skills">
-      <div className="sb-container">
+      <div className="sb-container sb-skew">
         <motion.span
           className="sb-eyebrow"
           variants={fadeUp}
@@ -28,9 +28,7 @@ export default function Skills() {
         </motion.span>
 
         <h2 className="skills__heading">
-          <LineReveal>
-            The stack I <span className="sb-gradient-text">build with.</span>
-          </LineReveal>
+          <CharReveal text="The stack I" accent="build with." />
         </h2>
         <motion.p
           className="skills__note"
@@ -54,17 +52,36 @@ export default function Skills() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
+              onMouseMove={(e) => {
+                const r = e.currentTarget.getBoundingClientRect();
+                e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
+                e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`);
+              }}
             >
               <BorderBeam duration={5 + (i % 3)} />
+              <span className="skills__spot" aria-hidden="true" />
               <span className="skills__group-index">0{i + 1}</span>
               <h3 className="skills__group-title">{group.group}</h3>
-              <ul className="skills__tags">
+              <motion.ul
+                className="skills__tags"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.4 }}
+                variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.045, delayChildren: 0.15 } } }}
+              >
                 {group.items.map((item) => (
-                  <li key={item} className="skills__tag">
+                  <motion.li
+                    key={item}
+                    className="skills__tag"
+                    variants={{
+                      hidden: { opacity: 0, scale: 0.5, y: 14, filter: 'blur(4px)' },
+                      visible: { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 320, damping: 18 } },
+                    }}
+                  >
                     {item}
-                  </li>
+                  </motion.li>
                 ))}
-              </ul>
+              </motion.ul>
             </motion.div>
           ))}
         </div>

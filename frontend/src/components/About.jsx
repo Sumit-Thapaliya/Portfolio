@@ -4,7 +4,7 @@ import projects from '../data/projects.js';
 import skills from '../data/skills.js';
 import TextReveal from './ui/TextReveal.jsx';
 import NumberTicker from './ui/NumberTicker.jsx';
-import LineReveal from './ui/LineReveal.jsx';
+import CharReveal from './ui/CharReveal.jsx';
 import './About.css';
 
 const fadeUp = {
@@ -28,7 +28,7 @@ const STATS = [
 export default function About() {
   return (
     <section id="about" className="about">
-      <div className="sb-container">
+      <div className="sb-container sb-skew">
         <motion.span
           className="sb-eyebrow"
           variants={fadeUp}
@@ -41,11 +41,9 @@ export default function About() {
 
         <div className="about__grid">
           <h2 className="about__heading">
-            <LineReveal>I like building things that</LineReveal>
-            <LineReveal delay={0.08}>
-              <span className="sb-gradient-text">hold up under real use</span>
-            </LineReveal>
-            <LineReveal delay={0.16}>— not just in a demo.</LineReveal>
+            <CharReveal text="I build things that" />
+            <CharReveal text="hold up under" accent="real use" delay={0.15} />
+            <CharReveal text="— not just in a demo." delay={0.3} />
           </h2>
 
           <div className="about__body">

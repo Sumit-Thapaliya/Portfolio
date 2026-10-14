@@ -7,8 +7,10 @@
 
 .skills__heading {
   margin-top: 18px;
-  font-size: clamp(26px, 3vw, 38px);
+  font-size: clamp(34px, 5vw, 68px);
   font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .skills__grid {
@@ -93,4 +95,22 @@
 
 .skills__group:hover .skills__group-index {
   color: var(--sb-teal);
+}
+
+.skills__spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(52, 228, 192, 0.14), transparent 65%);
+  transition: opacity 0.5s var(--sb-ease-smooth);
+}
+
+.skills__group:hover .skills__spot {
+  opacity: 1;
+}
+
+.skills__group > *:not(.skills__spot) {
+  position: relative;
+  z-index: 1;
 }

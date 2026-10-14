@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import site from '../data/site.js';
-import LineReveal from './ui/LineReveal.jsx';
+import CharReveal from './ui/CharReveal.jsx';
 import ShimmerButton from './ui/ShimmerButton.jsx';
 import './Contact.css';
 
@@ -60,9 +60,10 @@ export default function Contact() {
         setBooted(true);
         let i = 0;
         const timer = setInterval(() => {
-          setLines((prev) => [...prev, BOOT[i]]);
+          const line = BOOT[i]; // capture now — never read `i` inside the updater
           i++;
           if (i >= BOOT.length) clearInterval(timer);
+          if (line) setLines((prev) => [...prev, line]);
         }, 420);
       },
       { threshold: 0.4 }
@@ -157,7 +158,7 @@ export default function Contact() {
 
   return (
     <section id="contact" className="contact">
-      <div className="sb-container">
+      <div className="sb-container sb-skew">
         <motion.span
           className="sb-eyebrow"
           initial={{ opacity: 0, y: 20 }}
@@ -177,10 +178,8 @@ export default function Contact() {
             transition={{ duration: 0.55 }}
           >
             <h2 className="contact__heading">
-              <LineReveal>Let's build</LineReveal>
-              <LineReveal delay={0.08}>
-                <span className="sb-gradient-text">something.</span>
-              </LineReveal>
+              <CharReveal text="Let's build" />
+              <CharReveal accent="something." delay={0.15} />
             </h2>
             <p className="contact__text">
               Looking for a software developer in Nepal or a remote full-stack
@@ -239,7 +238,7 @@ export default function Contact() {
             </div>
 
             <div className="term__body" ref={bodyRef} aria-live="polite">
-              {lines.map((l, i) => (
+              {lines.filter(Boolean).map((l, i) => (
                 <p key={i} className={`term__line term__line--${l.t}`}>
                   {l.t === 'cmd' ? (
                     <>

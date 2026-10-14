@@ -39,3 +39,41 @@
     display: none;
   }
 }
+
+.cursor__ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mix-blend-mode: normal;
+}
+
+.cursor__label {
+  font-family: var(--sb-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #04110d;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.3s var(--sb-ease-smooth), transform 0.3s var(--sb-ease-smooth);
+}
+
+.cursor__ring--label {
+  width: 92px;
+  height: 92px;
+  background: var(--sb-teal);
+  border-color: var(--sb-teal);
+}
+
+.cursor__ring--label .cursor__label {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.cursor__dot--hide {
+  opacity: 0;
+}
+
+.cursor__ring--down {
+  transform: scale(0.85);
+}

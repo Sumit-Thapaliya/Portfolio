@@ -7,47 +7,110 @@ import './Scene.css';
 const BG = '#0a0e14';
 
 /* -------------------------------------------------------------------- */
-/*  Floating object: gentle bob + slow tumble, parallax from the cursor    */
+/*  Formations: where each object lives at different points of the page  */
+/*  p = 0 hero · 0.3 about/skills (orbit ring) · 0.62 projects (edges)   */
+/*  · 1 contact (converging cluster)                                      */
 /* -------------------------------------------------------------------- */
-function Floater({ position, rotationSpeed = [0.2, 0.3, 0], floatAmp = 0.35, phase = 0, depth = 1, children }) {
+const KEYS = [0, 0.3, 0.62, 1];
+
+function smooth(t) {
+  return t * t * (3 - 2 * t);
+}
+
+/** Piecewise-smoothstep interpolation between 4 Vector3 keyframes */
+function sampleFormation(frames, p, out) {
+  if (p <= KEYS[0]) return out.copy(frames[0]);
+  if (p >= KEYS[KEYS.length - 1]) return out.copy(frames[frames.length - 1]);
+  for (let i = 0; i < KEYS.length - 1; i++) {
+    if (p >= KEYS[i] && p <= KEYS[i + 1]) {
+      const t = smooth((p - KEYS[i]) / (KEYS[i + 1] - KEYS[i]));
+      return out.copy(frames[i]).lerp(frames[i + 1], t);
+    }
+  }
+  return out.copy(frames[0]);
+}
+
+function v(x, y, z) {
+  return new THREE.Vector3(x, y, z);
+}
+
+/* Each object: hero position, ring slot index, edge side, cluster offset */
+const OBJECTS = [
+  { kind: 'knot', hero: v(3.1, 0.9, -1), side: 1, spin: [0.15, 0.22, 0.05] },
+  { kind: 'ico', hero: v(-3.3, 1.8, -2.5), side: -1, spin: [0.1, 0.18, 0] },
+  { kind: 'octa', hero: v(3.6, -2.0, -0.5), side: 1, spin: [0.25, 0.3, 0.1] },
+  { kind: 'torus', hero: v(-2.9, -1.9, -1.5), side: -1, spin: [0.3, 0.12, 0] },
+  { kind: 'sphere', hero: v(0.6, 2.7, -4), side: 1, spin: [0, 0.1, 0] },
+  { kind: 'capsule', hero: v(-0.6, -3.0, -2), side: -1, spin: [0.05, 0.2, 0.35] },
+  { kind: 'dodeca', hero: v(1.6, -0.6, -5), side: 1, spin: [0.2, 0.25, 0.1] },
+];
+
+function buildFrames(i, o) {
+  const n = OBJECTS.length;
+  const a = (i / n) * Math.PI * 2;
+  const ring = v(Math.cos(a) * 3.4, Math.sin(a) * 1.6, -2 - Math.sin(a) * 1.2);
+  const edge = v(o.side * (4.6 + (i % 3) * 0.5), ((i % 4) - 1.5) * 1.4, -2.5 - (i % 2) * 1.5);
+  const b = a + 1.3;
+  const cluster = v(Math.cos(b) * 1.3, Math.sin(b) * 0.9 - 0.2, -2.5 + Math.sin(b) * 0.5);
+  return [o.hero, ring, edge, cluster];
+}
+
+/* -------------------------------------------------------------------- */
+function Floater({ index, def, children }) {
   const ref = useRef();
-  const base = useMemo(() => new THREE.Vector3(...position), [position]);
+  const frames = useMemo(() => buildFrames(index, def), [index, def]);
+  const target = useMemo(() => new THREE.Vector3(), []);
+  const phase = index * 1.37;
 
   useFrame(({ clock }, delta) => {
     const m = ref.current;
     if (!m) return;
     const t = clock.getElapsedTime() + phase;
     const intro = sceneState.intro;
+    const p = sceneState.progress;
 
-    // Bob + drift
-    const y = base.y + Math.sin(t * 0.7) * floatAmp;
-    const x = base.x + Math.cos(t * 0.45) * floatAmp * 0.5;
+    sampleFormation(frames, p, target);
 
-    // Parallax from the cursor (deeper objects move less), scroll lifts objects
-    const px = sceneState.mouseX * 0.6 * depth;
-    const py = sceneState.mouseY * 0.4 * depth;
-    const scrollLift = sceneState.scroll * 2.2 * depth;
+    // Ring formation slowly rotates as a whole while we're in it
+    const ringW = p > 0.12 && p < 0.5 ? 1 - Math.abs((p - 0.3) / 0.2) : 0;
+    if (ringW > 0) {
+      const rot = t * 0.12;
+      const x = target.x * Math.cos(rot) - target.z * Math.sin(rot) * 0.4;
+      const z = target.z + target.x * Math.sin(rot) * 0.4;
+      target.x = THREE.MathUtils.lerp(target.x, x, ringW);
+      target.z = THREE.MathUtils.lerp(target.z, z, ringW);
+    }
 
-    // During the intro, objects sit further apart and lower (they "assemble")
+    // Idle bob + cursor parallax
+    const bob = Math.sin(t * 0.7) * 0.3;
+    const px = sceneState.mouseX * 0.5;
+    const py = sceneState.mouseY * 0.35;
+
+    // Intro: objects start spread out & lower, then assemble
     const spread = 1 + intro * 0.9;
 
-    m.position.x = THREE.MathUtils.damp(m.position.x, x * spread + px, 3, delta);
-    m.position.y = THREE.MathUtils.damp(m.position.y, (y - intro * 1.5) * spread + py + scrollLift, 3, delta);
-    m.position.z = base.z;
+    m.position.x = THREE.MathUtils.damp(m.position.x, target.x * spread + px, 2.6, delta);
+    m.position.y = THREE.MathUtils.damp(m.position.y, (target.y + bob - intro * 1.5) * spread + py, 2.6, delta);
+    m.position.z = THREE.MathUtils.damp(m.position.z, target.z, 2.6, delta);
 
-    m.rotation.x += delta * rotationSpeed[0];
-    m.rotation.y += delta * rotationSpeed[1];
-    m.rotation.z += delta * rotationSpeed[2];
+    // Spin faster while the user scrolls fast
+    const boost = 1 + Math.min(Math.abs(sceneState.velocity) * 0.04, 3) + sceneState.burst * 10;
+    m.rotation.x += delta * def.spin[0] * boost;
+    m.rotation.y += delta * def.spin[1] * boost;
+    m.rotation.z += delta * def.spin[2] * boost;
+
+    // Breathe in the cluster
+    const s = p > 0.8 ? 1 - (p - 0.8) * 0.9 : 1;
+    m.scale.setScalar(THREE.MathUtils.damp(m.scale.x, s, 3, delta));
   });
 
   return (
-    <group ref={ref} position={position}>
+    <group ref={ref} position={def.hero}>
       {children}
     </group>
   );
 }
 
-/* Materials — faceted "low-poly premium" look lit by coloured lights */
 const metal = (color, extra = {}) => ({
   color,
   metalness: 0.75,
@@ -56,84 +119,110 @@ const metal = (color, extra = {}) => ({
   ...extra,
 });
 
-function Objects({ mobile }) {
-  const scale = mobile ? 0.7 : 1;
-  return (
-    <group scale={scale}>
-      {/* Torus knot — hero right */}
-      <Floater position={[3.1, 0.9, -1]} rotationSpeed={[0.15, 0.22, 0.05]} phase={1} depth={1}>
-        <mesh castShadow>
+function Shape({ kind }) {
+  switch (kind) {
+    case 'knot':
+      return (
+        <mesh>
           <torusKnotGeometry args={[0.75, 0.24, 160, 24]} />
           <meshStandardMaterial {...metal('#17403a')} />
         </mesh>
-      </Floater>
-
-      {/* Icosahedron — wire shell + dark core, upper left */}
-      <Floater position={[-3.3, 1.8, -2.5]} rotationSpeed={[0.1, 0.18, 0]} phase={2.4} depth={0.7}>
-        <mesh>
-          <icosahedronGeometry args={[1.05, 0]} />
-          <meshStandardMaterial {...metal('#0f1a24')} />
-        </mesh>
-        <mesh scale={1.06}>
-          <icosahedronGeometry args={[1.05, 0]} />
-          <meshBasicMaterial color="#34e4c0" wireframe transparent opacity={0.35} />
-        </mesh>
-      </Floater>
-
-      {/* Octahedron — amber accent, lower right */}
-      <Floater position={[3.6, -2.0, -0.5]} rotationSpeed={[0.25, 0.3, 0.1]} phase={4} depth={1.2} floatAmp={0.45}>
+      );
+    case 'ico':
+      return (
+        <>
+          <mesh>
+            <icosahedronGeometry args={[1.05, 0]} />
+            <meshStandardMaterial {...metal('#0f1a24')} />
+          </mesh>
+          <mesh scale={1.06}>
+            <icosahedronGeometry args={[1.05, 0]} />
+            <meshBasicMaterial color="#34e4c0" wireframe transparent opacity={0.35} />
+          </mesh>
+        </>
+      );
+    case 'octa':
+      return (
         <mesh>
           <octahedronGeometry args={[0.7, 0]} />
           <meshStandardMaterial {...metal('#6b4a1c', { emissive: '#ffb454', emissiveIntensity: 0.15 })} />
         </mesh>
-      </Floater>
-
-      {/* Torus — lower left */}
-      <Floater position={[-2.9, -1.9, -1.5]} rotationSpeed={[0.3, 0.12, 0]} phase={0.6} depth={0.9}>
+      );
+    case 'torus':
+      return (
         <mesh>
           <torusGeometry args={[0.85, 0.26, 24, 64]} />
           <meshStandardMaterial {...metal('#1b2a3a', { flatShading: false, roughness: 0.2 })} />
         </mesh>
-      </Floater>
-
-      {/* Glossy sphere — top centre, far */}
-      <Floater position={[0.6, 2.7, -4]} rotationSpeed={[0, 0.1, 0]} phase={3.1} depth={0.5} floatAmp={0.25}>
+      );
+    case 'sphere':
+      return (
         <mesh>
           <sphereGeometry args={[0.55, 48, 48]} />
           <meshStandardMaterial color="#34e4c0" metalness={0.9} roughness={0.15} emissive="#0e4a40" emissiveIntensity={0.6} />
         </mesh>
-      </Floater>
-
-      {/* Capsule — bottom centre */}
-      <Floater position={[-0.6, -3.0, -2]} rotationSpeed={[0.05, 0.2, 0.35]} phase={5.2} depth={0.8}>
+      );
+    case 'capsule':
+      return (
         <mesh>
           <capsuleGeometry args={[0.32, 1.1, 8, 20]} />
           <meshStandardMaterial {...metal('#223447', { flatShading: false })} />
         </mesh>
-      </Floater>
-
-      {/* Dodecahedron — small, deep */}
-      <Floater position={[1.6, -0.6, -5]} rotationSpeed={[0.2, 0.25, 0.1]} phase={1.9} depth={0.4}>
+      );
+    case 'dodeca':
+      return (
         <mesh>
           <dodecahedronGeometry args={[0.55, 0]} />
           <meshStandardMaterial {...metal('#2b2117', { emissive: '#ffb454', emissiveIntensity: 0.08 })} />
         </mesh>
-      </Floater>
+      );
+    default:
+      return null;
+  }
+}
 
-      {/* Tiny tetrahedrons — dust */}
-      {[[-1.4, 0.4, -6], [2.2, 2.2, -6.5], [-4.2, -0.2, -5], [4.6, 0.3, -4.5]].map((p, i) => (
-        <Floater key={i} position={p} rotationSpeed={[0.4, 0.5, 0.2]} phase={i * 1.7} depth={0.3} floatAmp={0.2}>
-          <mesh>
-            <tetrahedronGeometry args={[0.18, 0]} />
-            <meshStandardMaterial color="#34e4c0" emissive="#34e4c0" emissiveIntensity={0.5} />
-          </mesh>
-        </Floater>
+/* Glowing shards that always orbit the camera's view — depth filler */
+function Shards({ count = 14 }) {
+  const ref = useRef();
+  const seeds = useMemo(
+    () =>
+      Array.from({ length: count }, (_, i) => ({
+        r: 3 + Math.random() * 4,
+        a: (i / count) * Math.PI * 2,
+        y: (Math.random() - 0.5) * 5,
+        z: -3 - Math.random() * 5,
+        s: 0.08 + Math.random() * 0.12,
+        sp: 0.05 + Math.random() * 0.1,
+      })),
+    [count]
+  );
+
+  useFrame(({ clock }) => {
+    const g = ref.current;
+    if (!g) return;
+    const t = clock.getElapsedTime();
+    const p = sceneState.progress;
+    g.children.forEach((m, i) => {
+      const sd = seeds[i];
+      const a = sd.a + t * sd.sp + p * 2;
+      m.position.set(Math.cos(a) * sd.r, sd.y + Math.sin(t * 0.5 + i) * 0.3, sd.z);
+      m.rotation.x = t * 0.5 + i;
+      m.rotation.y = t * 0.3;
+    });
+  });
+
+  return (
+    <group ref={ref}>
+      {seeds.map((sd, i) => (
+        <mesh key={i} scale={sd.s}>
+          <tetrahedronGeometry args={[1, 0]} />
+          <meshStandardMaterial color={i % 3 === 0 ? '#ffb454' : '#34e4c0'} emissive={i % 3 === 0 ? '#ffb454' : '#34e4c0'} emissiveIntensity={0.6} />
+        </mesh>
       ))}
     </group>
   );
 }
 
-/* Sparse starfield for depth */
 function Stars({ count = 500 }) {
   const ref = useRef();
   const positions = useMemo(() => {
@@ -148,8 +237,8 @@ function Stars({ count = 500 }) {
 
   useFrame((_, delta) => {
     if (!ref.current) return;
-    ref.current.rotation.y += delta * 0.008;
-    ref.current.position.y = sceneState.scroll * 1.2;
+    ref.current.rotation.y += delta * (0.008 + Math.min(Math.abs(sceneState.velocity) * 0.001, 0.05));
+    ref.current.rotation.z = sceneState.progress * 0.6;
   });
 
   return (
@@ -162,16 +251,20 @@ function Stars({ count = 500 }) {
   );
 }
 
-/* Camera rig: dolly-in on reveal, breathe, follow cursor */
+/* Camera: dolly on reveal, drift through the page, follow the cursor */
 function Rig() {
   useFrame(({ camera, clock }, delta) => {
+    sceneState.burst = Math.max(0, sceneState.burst - delta * 1.6);
     const intro = sceneState.intro;
+    const p = sceneState.progress;
     const t = clock.getElapsedTime();
-    const targetZ = 8 + intro * 4.5;
+    const targetZ = 8 + intro * 4.5 + Math.sin(p * Math.PI) * 1.5;
+    const driftX = Math.sin(p * Math.PI * 2) * 1.1;
     camera.position.z = THREE.MathUtils.damp(camera.position.z, targetZ, 2.2, delta);
-    camera.position.x = THREE.MathUtils.damp(camera.position.x, sceneState.mouseX * 0.4 + Math.sin(t * 0.15) * 0.15, 2, delta);
+    camera.position.x = THREE.MathUtils.damp(camera.position.x, sceneState.mouseX * 0.4 + driftX + Math.sin(t * 0.15) * 0.15, 2, delta);
     camera.position.y = THREE.MathUtils.damp(camera.position.y, sceneState.mouseY * 0.3 + Math.cos(t * 0.12) * 0.1, 2, delta);
     camera.lookAt(0, 0, -1);
+    camera.rotation.z = THREE.MathUtils.damp(camera.rotation.z, -sceneState.velocity * 0.0006, 3, delta);
   });
   return null;
 }
@@ -195,7 +288,15 @@ export default function Scene({ mobile = false }) {
         <pointLight position={[5, 3, 3]} intensity={38} color="#34e4c0" distance={18} decay={2} />
         <pointLight position={[-5, -3, 2]} intensity={28} color="#ffb454" distance={18} decay={2} />
         <pointLight position={[0, -5, -4]} intensity={14} color="#4f7cff" distance={16} decay={2} />
-        <Objects mobile={mobile} />
+
+        <group scale={mobile ? 0.7 : 1}>
+          {OBJECTS.map((def, i) => (
+            <Floater key={def.kind} index={i} def={def}>
+              <Shape kind={def.kind} />
+            </Floater>
+          ))}
+          <Shards count={mobile ? 8 : 14} />
+        </group>
         <Stars count={mobile ? 220 : 500} />
         <Rig />
       </Canvas>

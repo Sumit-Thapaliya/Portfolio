@@ -11,7 +11,10 @@
   --sb-amber: #ffb454;
 
   /* ---- Type tokens ---- */
-  --sb-font-hero: 'Syne', sans-serif;
+  --sb-font-hero: 'Bebas Neue', 'Outfit', Impact, sans-serif;
+  --sb-font-heading: 'Outfit', sans-serif;
+  --vel: 0;
+  --sb-font-serif: 'Instrument Serif', Georgia, serif;
   --sb-font-display: 'Bricolage Grotesque', sans-serif;
   --sb-font-body: 'Inter', sans-serif;
   --sb-font-mono: 'JetBrains Mono', monospace;
@@ -142,4 +145,184 @@ textarea:focus-visible {
 
 .line-reveal__inner {
   padding-bottom: 0.08em;
+}
+
+/* Italic serif accent used inside headings — the editorial "premium" contrast */
+.sb-accent {
+  font-family: var(--sb-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.12em;
+  letter-spacing: 0;
+  background: linear-gradient(120deg, var(--sb-teal) 0%, #9ff0dc 45%, var(--sb-amber) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-right: 0.06em; /* italic overhang */
+}
+
+/* Char-reveal headings */
+.char-reveal {
+  display: block;
+}
+
+.char-reveal__word {
+  display: inline-block;
+  white-space: nowrap;
+  margin-right: 0.26em;
+}
+
+.char-reveal__word:last-child {
+  margin-right: 0;
+}
+
+.char-reveal__char {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+  transform-origin: 50% 100%;
+}
+
+/* Reveal line that draws across when a section enters */
+.sb-rule {
+  height: 1px;
+  background: linear-gradient(90deg, var(--sb-teal), var(--sb-border) 40%, transparent);
+  transform-origin: left;
+}
+
+.sb-accent--chars {
+  background: none;
+  color: inherit;
+}
+
+.sb-accent--chars .char-reveal__char {
+  background-image: linear-gradient(120deg, var(--sb-teal) 0%, #9ff0dc 45%, var(--sb-amber) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- Motion utilities (phase 3) ---------- */
+
+/* Content stretches with scroll velocity (set on <html> by useLenis) */
+.sb-skew {
+  transform: skewY(calc(var(--vel) * 1.6deg)) scaleY(calc(1 + var(--vel) * var(--vel) * 0.03));
+  transform-origin: 50% 50%;
+  transition: transform 0.12s linear;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-skew {
+    transform: none;
+  }
+}
+
+/* Click ripple on the page */
+.sb-ripple {
+  position: fixed;
+  z-index: 60;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sb-teal);
+  pointer-events: none;
+  animation: sb-ripple 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes sb-ripple {
+  from {
+    transform: scale(0.4);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(7);
+    opacity: 0;
+  }
+}
+
+/* Cinematic vignette + light leak */
+.sb-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%),
+    radial-gradient(40% 30% at 100% 0%, rgba(52, 228, 192, 0.06), transparent 70%),
+    radial-gradient(35% 30% at 0% 100%, rgba(255, 180, 84, 0.05), transparent 70%);
+}
+
+/* Section HUD (right rail) */
+.hud {
+  position: fixed;
+  right: clamp(14px, 2vw, 28px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-family: var(--sb-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.hud--ready {
+  opacity: 1;
+}
+
+.hud__item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  color: var(--sb-text-muted);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.hud__label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition: max-width 0.5s var(--sb-ease-smooth), opacity 0.4s ease;
+}
+
+.hud__item:hover .hud__label,
+.hud__item--active .hud__label {
+  max-width: 120px;
+  opacity: 1;
+}
+
+.hud__item--active {
+  color: var(--sb-teal);
+}
+
+.hud__bar {
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.5s var(--sb-ease-smooth), background 0.3s ease;
+  opacity: 0.6;
+}
+
+.hud__item--active .hud__bar {
+  width: 34px;
+  opacity: 1;
+}
+
+@media (max-width: 1100px), (hover: none) {
+  .hud {
+    display: none;
+  }
 }

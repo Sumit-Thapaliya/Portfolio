@@ -13,9 +13,11 @@
 }
 
 .contact__heading {
-  font-size: clamp(26px, 3vw, 38px);
+  font-size: clamp(38px, 5vw, 72px);
   font-weight: 600;
-  margin-bottom: 18px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 22px;
 }
 
 .contact__text {

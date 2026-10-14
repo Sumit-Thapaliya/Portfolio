@@ -39,7 +39,7 @@ export default function Preloader({ onFinish }) {
     document.body.style.overflow = 'hidden';
     const counter = { v: 0 };
     const root = rootRef.current;
-    const panels = root.querySelectorAll('.pre__panel');
+    const cols = root.querySelectorAll('.pre__col');
     const brand = root.querySelectorAll('.pre__brand span');
     const meta = root.querySelector('.pre__meta');
 
@@ -88,11 +88,24 @@ export default function Preloader({ onFinish }) {
 
     // 4. Reveal: counter blows up, panels split, camera dollies in
     tl.to(numRef.current, { scale: 1.6, opacity: 0, duration: 0.6, ease: 'power3.in' }, '>-0.1')
+      .fromTo(root.querySelector('.pre__flash'), { opacity: 0 }, { opacity: 0.9, duration: 0.12, ease: 'power1.in' }, '<0.35')
+      .to(root.querySelector('.pre__flash'), { opacity: 0, duration: 0.7, ease: 'power2.out' })
       .to([brand, meta, barRef.current?.parentElement, wordRef.current?.parentElement], { opacity: 0, duration: 0.3 }, '<')
       .to(sceneState, { intro: 0, duration: 1.8, ease: 'power3.inOut' }, '<0.1')
-      .to(panels[0], { yPercent: -100, duration: 1.1, ease: 'expo.inOut' }, '<0.05')
-      .to(panels[1], { yPercent: 100, duration: 1.1, ease: 'expo.inOut' }, '<')
-      .to(root, { autoAlpha: 0, duration: 0.2 }, '-=0.2');
+      // Slice curtain: columns peel upward from the centre outwards
+      .to(
+        cols,
+        {
+          yPercent: -101,
+          scaleY: 1.15,
+          transformOrigin: '50% 0%',
+          duration: 1.15,
+          ease: 'expo.inOut',
+          stagger: { each: 0.06, from: 'center' },
+        },
+        '<0.05'
+      )
+      .to(root, { autoAlpha: 0, duration: 0.2 }, '-=0.25');
 
     return () => {
       tl.kill();
@@ -105,8 +118,12 @@ export default function Preloader({ onFinish }) {
 
   return (
     <div className="pre" ref={rootRef} aria-hidden="true">
-      <div className="pre__panel pre__panel--top" />
-      <div className="pre__panel pre__panel--bottom" />
+      <div className="pre__flash" />
+      <div className="pre__cols">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div className="pre__col" key={i} />
+        ))}
+      </div>
 
       <div className="pre__content">
         <div className="pre__brand">
