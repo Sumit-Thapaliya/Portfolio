@@ -4,7 +4,7 @@
  * vite.config.js, so the static HTML crawlers see always matches the app.
  */
 const site = {
-  url: 'https://sumitthapaliya.com.np/',
+  url: 'https://www.sumitthapaliya.com.np/',
   name: 'Sumit Thapaliya',
   firstName: 'Sumit',
   greeting: "Hi, I'm",

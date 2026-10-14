@@ -8,12 +8,12 @@
     entries here only when real routes (e.g. /blog, /projects/medbridge) are added.
   -->
   <url>
-    <loc>https://sumitthapaliya.com.np/</loc>
+    <loc>https://www.sumitthapaliya.com.np/</loc>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://sumitthapaliya.com.np/og-image.png</image:loc>
+      <image:loc>https://www.sumitthapaliya.com.np/og-image.png</image:loc>
       <image:title>Sumit Thapaliya – Software Developer &amp; Full Stack Developer, Nepal</image:title>
       <image:caption>Sumit Thapaliya Portfolio cover image</image:caption>
     </image:image>
