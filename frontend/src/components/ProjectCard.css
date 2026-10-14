@@ -78,7 +78,7 @@
   font-size: 14.5px;
   line-height: 1.65;
   color: var(--sb-text-muted);
-  min-height: 88px;
+  min-height: 0;
 }
 
 .pcard__tech {

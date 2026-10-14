@@ -74,7 +74,7 @@
 
 .hero__name {
   font-family: var(--sb-font-hero);
-  font-size: clamp(40px, 6vw, 80px);
+  font-size: clamp(46px, 8.4vw, 118px);
   font-weight: 800;
   letter-spacing: -0.025em;
   line-height: 1.02;
@@ -97,10 +97,10 @@
 }
 
 .hero__role {
-  margin-top: 20px;
+  margin-top: 22px;
   max-width: 620px;
   font-family: var(--sb-font-display);
-  font-size: clamp(18px, 2vw, 24px);
+  font-size: clamp(18px, 2.1vw, 26px);
   font-weight: 500;
   line-height: 1.35;
   color: var(--sb-text);
@@ -145,8 +145,9 @@
 }
 
 .hero__summary {
-  font-size: 16px;
+  font-size: 16.5px;
   line-height: 1.65;
+  max-width: 520px;
   color: var(--sb-text-muted);
 }
 

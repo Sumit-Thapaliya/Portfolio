@@ -67,9 +67,8 @@ export default function Projects() {
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.55, delay: 0.1 }}
         >
-          A look inside Sumit Thapaliya's portfolio: healthcare software, AI
-          tools and computer-vision experiments — built end to end, from data
-          model to deployed UI.
+          Six builds from Sumit Thapaliya's GitHub — AI tooling, vision,
+          healthcare and design software.
         </motion.p>
 
         <div className="projects__grid">

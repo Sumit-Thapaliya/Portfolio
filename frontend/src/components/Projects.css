@@ -50,30 +50,3 @@
   position: relative;
   z-index: 1;
 }
-
-.projects__grid .pcard--featured {
-  grid-column: 1 / -1;
-}
-
-@media (min-width: 860px) {
-  .pcard--featured .pcard__inner {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 40px;
-    align-items: end;
-  }
-  .pcard--featured .pcard__top {
-    grid-column: 1 / -1;
-  }
-  .pcard--featured .pcard__desc {
-    font-size: 16px;
-    min-height: 0;
-  }
-  .pcard--featured .pcard__title {
-    font-size: 34px;
-  }
-  .pcard--featured .pcard__tech {
-    margin-top: 0;
-    justify-content: flex-end;
-  }
-}

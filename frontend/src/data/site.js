@@ -9,7 +9,7 @@ const site = {
   firstName: 'Sumit',
   greeting: "Hi, I'm",
   // H2 under the H1 — descriptive, keyword-rich, human.
-  role: 'Software Developer & Full Stack Developer from Nepal — crafting React, Node.js & AI-powered web applications',
+  role: 'Software Developer & Full Stack Developer from Nepal',
   roles: [
     'Software Developer',
     'Full Stack Developer',
@@ -20,9 +20,8 @@ const site = {
   location: 'Kathmandu, Nepal',
   email: 'sumitthapaliya63@gmail.com',
   summary:
-    "I'm Sumit Thapaliya, a software developer from Kathmandu, Nepal who builds modern web applications end to end — from PostgreSQL schemas and Express APIs to responsive, animated React interfaces. This portfolio spans healthcare software (MedBridge), AI tools built on Gemini, and computer-vision projects in Python.",
-  summary2:
-    'I care about clean architecture, performance, and software that holds up under real use. Currently open to full-time software developer roles, internships and freelance projects in Nepal or remote.',
+    'I build web and AI products end to end — from database schema to the animated interface. Currently open to software developer roles and freelance work.',
+  summary2: '',
   availability: 'Open to work',
   socials: [
     { label: 'GitHub', href: 'https://github.com/Sumit-Thapaliya' },

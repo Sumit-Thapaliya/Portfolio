@@ -1,0 +1,137 @@
+.pre {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  font-family: var(--sb-font-mono);
+}
+
+.pre__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.5%;
+  background: rgba(10, 14, 20, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.pre__panel--top {
+  top: 0;
+  border-bottom: 1px solid rgba(52, 228, 192, 0.12);
+}
+
+.pre__panel--bottom {
+  bottom: 0;
+}
+
+.pre__content {
+  position: absolute;
+  left: clamp(24px, 6vw, 80px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.pre__brand {
+  display: flex;
+  overflow: hidden;
+  font-family: var(--sb-font-hero);
+  font-weight: 800;
+  font-size: clamp(24px, 6vw, 84px);
+  letter-spacing: -0.03em;
+  max-width: calc(100vw - 2 * clamp(24px, 6vw, 80px));
+  line-height: 1;
+  color: var(--sb-text);
+}
+
+.pre__brand span {
+  display: inline-block;
+  will-change: transform;
+}
+
+.pre__meta {
+  margin-top: 16px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sb-text-muted);
+}
+
+.pre__word-wrap {
+  margin-top: 34px;
+  height: 22px;
+  overflow: hidden;
+  color: var(--sb-teal);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pre__word {
+  display: inline-block;
+}
+
+.pre__word::before {
+  content: '— ';
+  color: var(--sb-amber);
+}
+
+.pre__counter {
+  position: absolute;
+  right: clamp(24px, 6vw, 80px);
+  bottom: clamp(28px, 7vh, 72px);
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--sb-text);
+  transform-origin: right bottom;
+}
+
+.pre__num {
+  display: inline-block;
+  font-family: var(--sb-font-hero);
+  font-weight: 800;
+  font-size: clamp(64px, 13vw, 170px);
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  transform-origin: right bottom;
+  background: linear-gradient(120deg, var(--sb-text) 30%, var(--sb-teal) 70%, var(--sb-amber));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pre__pct {
+  font-size: clamp(16px, 2vw, 24px);
+  color: var(--sb-text-muted);
+}
+
+.pre__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: rgba(232, 237, 244, 0.06);
+  z-index: 2;
+}
+
+.pre__bar-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--sb-teal), var(--sb-amber));
+  box-shadow: 0 0 18px rgba(52, 228, 192, 0.5);
+}
+
+@media (max-width: 640px) {
+  .pre__content {
+    top: 38%;
+  }
+  .pre__brand {
+    font-size: 7vw;
+  }
+}

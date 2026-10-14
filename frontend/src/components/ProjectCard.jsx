@@ -37,7 +37,7 @@ export default function ProjectCard({ project, index }) {
 
   return (
     <motion.article
-      className={`pcard ${project.featured ? 'pcard--featured' : ''}`}
+      className="pcard"
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={titleScramble.handleMouseEnter}
@@ -47,21 +47,13 @@ export default function ProjectCard({ project, index }) {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.7, delay: (index % 3) * 0.1, ease: [0.16, 1, 0.3, 1] }}
     >
-      <BorderBeam duration={project.featured ? 7 : 5} always={project.featured} />
+      <BorderBeam duration={5 + (index % 3)} />
       <div className="pcard__glow" />
       <div className="pcard__inner">
         <div className="pcard__top">
           <span className="pcard__index">
             {String(index + 1).padStart(2, '0')}
-            {project.status && (
-              <span
-                className={`pcard__status ${
-                  project.status === 'In progress' ? 'pcard__status--live' : ''
-                }`}
-              >
-                {project.status}
-              </span>
-            )}
+            {project.year && <span className="pcard__status">{project.year}</span>}
           </span>
           <div className="pcard__links">
             {hasLive && (
@@ -78,9 +70,7 @@ export default function ProjectCard({ project, index }) {
               >
                 Code ↗
               </a>
-            ) : (
-              <span className="pcard__links-soon">Private</span>
-            )}
+            ) : null}
           </div>
         </div>
 

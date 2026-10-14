@@ -9,6 +9,15 @@
   border-bottom: 1px solid transparent;
 }
 
+.nav--hidden {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.nav {
+  transition: opacity 0.8s var(--sb-ease-smooth), transform 0.8s var(--sb-ease-smooth), background 0.45s var(--sb-ease-smooth), padding 0.45s var(--sb-ease-smooth), border-color 0.45s var(--sb-ease-smooth);
+}
+
 .nav--scrolled {
   padding: 14px 0;
   background: rgba(10, 14, 20, 0.75);

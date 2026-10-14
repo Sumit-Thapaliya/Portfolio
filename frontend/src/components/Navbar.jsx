@@ -14,7 +14,7 @@ function ScrambleLink({ href, label }) {
   );
 }
 
-export default function Navbar() {
+export default function Navbar({ ready = true }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className={`nav ${scrolled ? 'nav--scrolled' : ''}`} aria-label="Primary">
+    <nav className={`nav ${scrolled ? 'nav--scrolled' : ''} ${ready ? '' : 'nav--hidden'}`} aria-label="Primary">
       <div className="sb-container nav__inner">
         <a href="#top" className="nav__brand" aria-label={`${site.name} – Software Developer portfolio home`}>
           ST<span className="nav__brand-dot">.</span>

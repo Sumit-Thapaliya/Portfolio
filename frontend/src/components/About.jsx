@@ -21,8 +21,8 @@ const totalSkills = skills.reduce((n, g) => n + g.items.length, 0);
 const STATS = [
   { value: projects.length, suffix: '+', label: 'Projects built' },
   { value: totalSkills, suffix: '+', label: 'Technologies' },
-  { value: 3, suffix: '', label: 'AI / ML builds' },
-  { value: 100, suffix: '%', label: 'Full-stack ownership' },
+  { value: 31, suffix: '', label: 'Public repos' },
+  { value: 4, suffix: '', label: 'AI / ML products' },
 ];
 
 export default function About() {
@@ -51,7 +51,7 @@ export default function About() {
           <div className="about__body">
             <TextReveal
               className="about__lead"
-              text={`I'm ${site.name}, a software developer and full-stack developer based in ${site.location} who enjoys the whole path from a database schema to the interface someone actually clicks on. I care about clean architecture — routes that stay thin, services that hold the logic, and data that's validated before it ever reaches a controller.`}
+              text={`I'm ${site.name}, a software developer in ${site.location}. I enjoy the whole path from a database schema to the interface someone actually clicks — and I care that it holds up in production.`}
             />
             <motion.p
               variants={fadeUp}
@@ -60,25 +60,9 @@ export default function About() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.4 }}
             >
-              My current focus is <strong>MedBridge</strong>, a healthcare
-              medicine exchange platform where hospitals and clinics manage
-              inventory, request stock exchanges, track expiry dates, and soon
-              rely on AI-powered demand forecasting. Working on something used by
-              real institutions has shaped how I think about resilience, edge
-              cases, and building software people can actually trust.
-            </motion.p>
-            <motion.p
-              variants={fadeUp}
-              custom={3}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.4 }}
-            >
-              Beyond the web stack, I've shipped Python projects in computer
-              vision and speech, and I build on LLM APIs like Google Gemini.
-              As a software developer in Nepal, I'm focused on writing code
-              that's maintainable, well-tested, and genuinely useful — and on
-              animating the front end without it getting in the user's way.
+              Recent work spans AI developer tools, on-device computer vision,
+              healthcare software and browser-based design tools — mostly
+              React, Node.js, Python and whatever model fits the problem.
             </motion.p>
           </div>
         </div>

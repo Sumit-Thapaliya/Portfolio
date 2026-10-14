@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import site from "../data/site.js";
@@ -7,23 +7,8 @@ import "./Hero.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// The Three.js scene is code-split: it never blocks first paint or the HTML
-// crawlers read, and is skipped entirely for reduced-motion / tiny devices.
-const HeroScene = lazy(() => import("./three/HeroScene.jsx"));
-
 const NAME = site.name;
 const ROLES = site.roles;
-
-function useCanRun3D() {
-  const [ok, setOk] = useState(false);
-  useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const small = window.innerWidth < 640;
-    const lowMem = navigator.deviceMemory && navigator.deviceMemory < 2;
-    setOk(!reduced && !small && !lowMem);
-  }, []);
-  return ok;
-}
 
 export default function Hero({ ready }) {
   const nameRef = useRef(null);
@@ -31,7 +16,6 @@ export default function Hero({ ready }) {
   const roleRef = useRef(null);
   const typeRef = useRef(null);
   const metaRef = useRef(null);
-  const show3D = useCanRun3D();
 
   // Letter-by-letter name reveal, runs once `ready` (intro finished) is true
   useEffect(() => {
@@ -190,13 +174,7 @@ export default function Hero({ ready }) {
 
   return (
     <section id="top" className="hero">
-      {show3D && ready && (
-        <Suspense fallback={null}>
-          <HeroScene />
-        </Suspense>
-      )}
-
-      <div className="sb-container hero__inner">
+      <div className="sb-container hero__inner" style={{ opacity: ready ? undefined : 0 }}>
         <span className="sb-eyebrow">Portfolio / 2026</span>
 
         {/* H1 reads "Hi, I'm Sumit Thapaliya" to crawlers & screen readers */}
@@ -235,7 +213,6 @@ export default function Hero({ ready }) {
 
         <div className="hero__meta" ref={metaRef}>
           <p className="hero__summary">{site.summary}</p>
-          <p className="hero__summary hero__summary--secondary">{site.summary2}</p>
 
           <div className="hero__actions">
             <ShimmerButton href="#projects" className="hero__btn hero__btn--primary">
