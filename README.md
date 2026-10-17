@@ -1,122 +1,158 @@
 # Sumit Thapaliya — Portfolio
 
-A full-stack developer portfolio: React/Vite frontend with a cinematic
-intro, GSAP letter-reveal hero, particle-network background, tilting
-project cards, and scroll animations — plus a Node/Express backend that
-emails contact-form submissions straight to your inbox.
+Personal portfolio of **Sumit Thapaliya**, Software Developer & Full Stack Developer from Kathmandu, Nepal.
+
+**Live:** https://www.sumitthapaliya.com.np/
+
+A single-page, cinematic React site: a persistent Three.js scene that choreographs itself to the scroll, GSAP + Framer Motion reveals, Lenis smooth scrolling, a pinned horizontal project gallery, an interactive contact terminal (no backend) and a build-time SEO prerender so crawlers see real content without running JavaScript.
 
 ```
-portfolio/
-├── frontend/   React + Vite + GSAP + Lenis + Framer Motion
-└── backend/    Node + Express + Nodemailer + Zod
+Portfolio/
+└── frontend/        React 18 + Vite 6 (the whole site — static, no server)
 ```
 
-## 1. Frontend setup
+---
+
+## Quick start
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev        # http://localhost:5173
 ```
 
-Runs at **http://localhost:5173**. In dev, `/api/*` requests are proxied
-to the backend at `http://localhost:4000` (see `vite.config.js`).
+| Script            | What it does                                                   |
+| ----------------- | -------------------------------------------------------------- |
+| `npm run dev`     | Vite dev server with HMR                                       |
+| `npm run build`   | Production build → `frontend/dist` (runs the SEO prerender)    |
+| `npm run preview` | Serves `dist` locally to check the production bundle           |
 
-## 2. Backend setup
+Deploy: push to `main` — Vercel builds `frontend` with `npm run build` and serves `dist`. No environment variables are required.
 
-```bash
-cd backend
-cp .env.example .env
-npm install
-npm run dev
+---
+
+## Tech stack
+
+| Layer      | Library                                                                 |
+| ---------- | ----------------------------------------------------------------------- |
+| UI         | React 18, Vite 6                                                        |
+| 3D         | three.js 0.170 + @react-three/fiber 8 (code-split, loaded after paint)  |
+| Motion     | GSAP 3 + ScrollTrigger, Framer Motion 11, Lenis smooth scroll           |
+| Type       | Bebas Neue (display), Outfit (headings), Instrument Serif italic (accents), Bricolage Grotesque, Inter, JetBrains Mono — via Google Fonts |
+| Styling    | Plain CSS per component + design tokens in `src/index.css`              |
+
+No Tailwind, no UI kit, no backend, no analytics.
+
+---
+
+## Project structure
+
+```
+frontend/
+├── index.html                  Meta tags, Open Graph, JSON-LD, fonts, <!--SEO_PRERENDER--> slot
+├── vite.config.js              React plugin + seoPrerender plugin (static HTML injected at build)
+├── public/
+│   ├── favicon.svg / .ico      Icons — 48/96/192 px PNGs so Google shows the logo in results
+│   ├── favicon-{32,48,96,192}.png, apple-touch-icon.png, icon-512.png
+│   ├── og-image.png            1200×630 social preview
+│   ├── robots.txt, sitemap.xml, site.webmanifest
+└── src/
+    ├── main.jsx                Entry
+    ├── App.jsx                 Composition: scene, preloader, overlays, sections, error boundaries, colour grading
+    ├── index.css               Tokens (colours, fonts, easings), global utilities, HUD, grain, vignette
+    ├── data/
+    │   ├── site.js             Identity, URL, copy, nav, socials  ← single source of truth for app AND prerender
+    │   ├── projects.js         Six GitHub projects (title, tagline, one-line description, tech, links)
+    │   └── skills.js           Skill groups
+    ├── hooks/
+    │   ├── useLenis.js         Lenis driven by GSAP ticker; publishes scroll velocity (sceneState + --vel CSS var)
+    │   ├── useMagnetic.js      Magnetic hover for buttons
+    │   └── useScramble.js      Text scramble on hover
+    └── components/
+        ├── Preloader.jsx       Counter 0→100, rotating words, flash, 7-column slice curtain, camera dolly-in
+        ├── Navbar.jsx          Scramble links, shrinks on scroll, auto-hides when scrolling down
+        ├── SectionHUD.jsx      Right-hand rail 01–05 tracking the active section (desktop)
+        ├── Hero.jsx            Bebas Neue name: letter flip-in, magnetic letters, cursor-trailing ghost outline,
+        │                       velocity chromatic split, scroll-scrub letter scatter; rotating role typewriter
+        ├── About.jsx           Char-reveal heading, text reveal, animated stat counters
+        ├── Skills.jsx          Groups with cursor spotlight + spring pop-in tags
+        ├── Marquee.jsx         Two counter-scrolling rows; speed/direction/skew follow scroll velocity
+        ├── Projects.jsx        Desktop: pinned horizontal gallery (ScrollTrigger pin + scrub, progress bar,
+        │                       ghost "WORK"); mobile / reduced-motion: vertical grid
+        ├── ProjectCard.jsx     Procedural cover art (hue, orbs, monogram, light sweep), tilt, whole-card link
+        ├── Contact.jsx         Terminal: whoami / status / help / email / copy / github / linkedin / stack / clear
+        ├── Footer.jsx          Giant scrubbed name, back-to-top via Lenis
+        ├── CustomCursor.jsx    Dot + ring with contextual labels (Open / GitHub / Top); off on touch
+        ├── ScrollProgress.jsx  Top progress bar
+        ├── three/
+        │   ├── Scene.jsx       7 floating objects, 4 scroll-keyed formations, shards, stars, camera rig
+        │   └── sceneState.js   Mutable store: intro, scroll, progress, velocity, burst, mouse
+        └── ui/                 BorderBeam, CharReveal, TextReveal, NumberTicker, ShimmerButton, Spotlight,
+                                SectionBoundary (per-section error boundary)
 ```
 
-Runs at **http://localhost:4000**.
+---
 
-### Configuring email sending (.env)
+## How the pieces talk to each other
 
-The backend needs SMTP credentials for the account that *sends* the mail
-(the receiver, `CONTACT_RECEIVER_EMAIL`, is already set to
-`sumitthapaliya63@gmail.com` in `.env.example`).
+- **`sceneState`** (`components/three/sceneState.js`) is a plain mutable object read every frame by the 3D scene. The preloader tweens `intro` 1→0 (camera dolly-in), `App` writes `scroll` / `progress` / `mouse`, Lenis writes `velocity`, clicks set `burst`. No React re-renders at 60 fps.
+- **Scroll** goes through Lenis → `ScrollTrigger.update()`, so pins and scrubs stay in sync. Lenis also sets `--vel` (−1…1) on `<html>`; CSS uses it for the content skew (`.sb-skew`) and the hero's chromatic split.
+- **Colour grading:** `App.jsx` tweens `--sb-bg` per section as you scroll (hero → about → skills → projects → contact).
+- **Formations:** `Scene.jsx` keys object positions at page progress `[0, 0.3, 0.62, 1]` — hero spread → rotating ring → parted to the edges for the project gallery → centre cluster at contact.
+- **Error boundaries:** every section is wrapped in `SectionBoundary`, so a runtime error can only remove that one block, never the whole page.
 
-If you want to send via Gmail:
-1. Enable **2-Step Verification** on the Google account you'll send from.
-2. Create an **App Password**: https://myaccount.google.com/apppasswords
-3. Put that 16-character password in `SMTP_PASS`, and the Gmail address in
-   `SMTP_USER`.
+---
 
-You can instead use any SMTP provider (Resend, SendGrid, Mailgun, your own
-mail server) — just update `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` /
-`SMTP_PASS` accordingly.
+## Editing content
 
-## 3. What to edit before this is "yours"
+Everything you'd normally change lives in `src/data/`:
 
-- `frontend/src/data/projects.js` — replace the dummy projects (titles,
-  descriptions, tech, `liveUrl` / `codeUrl` links). MedBridge's entry is
-  already accurate — just add its real links when you have them.
-- `frontend/src/data/skills.js` — adjust groups/skills as needed.
-- `frontend/src/components/Contact.jsx` — the `SOCIALS` array has dummy
-  GitHub/LinkedIn/X links — swap in your real profile URLs.
-- `frontend/src/components/About.jsx` — tweak the bio copy if you want a
-  different angle or to mention more projects/experience.
-- `backend/.env` — your real SMTP credentials (never commit this file).
+- **Name, role, summary, email, socials, nav, canonical URL** → `site.js`
+- **Projects** → `projects.js` (keep descriptions to one line; `liveUrl` may be empty)
+- **Skills** → `skills.js`
 
-## 4. Deploying
+These files feed both the React components and the build-time prerender, so the static HTML always matches the app.
 
-- **Frontend**: build with `npm run build` in `frontend/` (outputs to
-  `frontend/dist`), deploy to Vercel/Netlify. Update the API base URL if
-  the backend isn't proxied in production (e.g. set an env var and adjust
-  `frontend/src/lib/api.js`).
-- **Backend**: deploy `backend/` to Render/Railway/Fly.io. Set the same
-  environment variables from `.env.example` in your host's dashboard, and
-  set `CLIENT_ORIGIN` to your deployed frontend's URL (for CORS).
+Head tags (title, description, Open Graph, Twitter, JSON-LD Person/WebSite/ProfilePage) are in `index.html`.
 
-## 5. SEO checklist (already wired up)
+---
 
-- `frontend/index.html` — title, meta description, canonical
-  (`https://sumitthapaliya.com.np/`), Open Graph / Twitter cards, JSON-LD
-  (`Person`, `WebSite`, `ProfilePage`), favicon + manifest.
-- `frontend/public/robots.txt` and `frontend/public/sitemap.xml`.
-- `frontend/public/og-image.png` — 1200×630 social preview card.
-- **Build-time prerender**: `vite.config.js` → `seoPrerender()` injects the
-  real page content (H1, H2s, about copy, skills, projects) into
-  `<div id="root">` of `dist/index.html`, generated from `src/data/*.js`.
-  Crawlers that don't execute JS still get a full page; React replaces it on
-  mount. Edit `src/data/site.js` / `projects.js` / `skills.js` and both the
-  app and the static HTML update together.
-- Single-page site ⇒ one public URL ⇒ one title/description. If you add real
-  routes later (e.g. `/blog`), give each its own `<title>`/description and add
-  it to `sitemap.xml`.
+## SEO
 
-**Domain:** Vercel currently 308-redirects the apex to `www.`. For the canonical
-to be honoured, set **sumitthapaliya.com.np** as the primary domain in
-Vercel → Project → Settings → Domains (so `www` → apex, not the reverse).
-Then verify in Google Search Console and submit `/sitemap.xml`.
+- Canonical / OG / JSON-LD / sitemap / robots all use **`https://www.sumitthapaliya.com.np/`**. Set `www` as the primary domain in Vercel so the apex redirects to it.
+- `seoPrerender` (in `vite.config.js`) injects real H1/H2, copy, skills and project markup into `<div id="root">` at build time; React hydrates over it.
+- Favicons are provided at 48/96/192 px (Google requires a multiple of 48 px) plus `/favicon.ico` and SVG.
+- `robots.txt` allows everything and points to `sitemap.xml`.
 
-## Tech notes
+---
 
-- **3D hero**: `components/three/HeroScene.jsx` — React Three Fiber scene
-  (wireframe icosahedron + additive particle field) that follows the cursor
-  and dollies back on scroll. Lazy-loaded in its own chunk, skipped for
-  `prefers-reduced-motion`, < 640px viewports and low-memory devices.
-- **Magic-UI style primitives**: `components/ui/` — `BorderBeam`,
-  `ShimmerButton`, `TextReveal` (scroll-linked), `NumberTicker`,
-  `LineReveal` (masked heading entrance), `Spotlight` — written in plain CSS +
-  Framer Motion (no Tailwind dependency).
+## Accessibility & performance
 
-- **Intro**: `IntroLoader.jsx` — a short terminal boot sequence followed
-  by a GSAP curtain-reveal, skipped automatically if the visitor has
-  `prefers-reduced-motion` on.
-- **Name reveal**: `Hero.jsx` splits the name into letter spans and
-  animates them in with GSAP once the intro finishes.
-- **Particle background**: `ParticleBackground.jsx` — a lightweight
-  canvas network-graph effect (no Three.js dependency needed, keeps
-  bundle size and GPU cost low). Nodes drift and react gently to the
-  mouse.
-- **Tilt cards**: `ProjectCard.jsx` tracks mouse position over each card
-  and applies a CSS 3D tilt + radial glow that follows the cursor.
-- **Scroll reveals**: Framer Motion's `whileInView` on About/Skills/
-  Projects/Contact; Lenis provides the smooth-scroll feel site-wide.
-- **Backend architecture**: routes → controller (thin) → service (mail
-  logic), Zod validation middleware runs before the controller, and a
-  rate limiter caps contact-form abuse at 5 submissions / 15 min / IP.
+- `prefers-reduced-motion`: preloader skipped, pinned gallery becomes a grid, letter scatter / skew / 3D disabled.
+- Touch devices: custom cursor and magnetic effects off; hero ghost hidden; vertical project grid.
+- 3D scene is lazy-loaded, skipped on very low-memory devices, and dimmed past the hero for readability.
+- Heavy transforms are limited to elements with `will-change`; sections are isolated so GSAP (transform) and Framer (opacity) never fight over the same property.
+
+---
+
+## Contact terminal commands
+
+```
+help      list commands
+whoami    short bio
+status    availability
+email     open mail client (mailto)
+copy      copy email address
+github    open GitHub profile
+linkedin  open LinkedIn profile
+stack     print the tech stack
+clear     clear the screen
+```
+
+---
+
+## Links
+
+- GitHub: https://github.com/Sumit-Thapaliya
+- LinkedIn: https://www.linkedin.com/in/sumit-thapaliya-8b4b84426/
+- Email: sumitthapaliya63@gmail.com
